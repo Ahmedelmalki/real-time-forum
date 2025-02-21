@@ -2,14 +2,15 @@ import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory } from "./chatHistory.js";
 import { fetchUsers } from "./displayUsers.js";
-import { displayMessage, displaySentMessage } from "./chatHelpers.js";
+import { displayMessage, displaySentMessage, updateUserStatus } from "./chatHelpers.js";
 
-const socketUrl = `ws://${document.location.host}/ws`; /*handle if user enters from other pc*/
+const socketUrl = `ws://${document.location.host}/ws`; 
 const socket = new WebSocket(socketUrl);
-export const onlineUsers = new Set();
+export const onlineUsers = new Set(); // is there a better way then set()
 
 socket.addEventListener("open", () => {
   console.log("WebSocket connection opened");
+  fetchUsers();
 });
 
 socket.addEventListener("error", (error) => {
@@ -26,12 +27,12 @@ socket.onmessage = (eve) => {
     console.log(newdata);
 
     if (newdata.Status) {
-      // if (newdata.Status === "online") {
-      //     onlineUsers.add(newdata.UserID);
-      // } else if (newdata.Status === "offline") {
-      //     onlineUsers.delete(newdata.UserID);
-      // }
-      // updateUserStatus(newdata.UserID, newdata.Status);
+      if (newdata.Status === "online") {
+          onlineUsers.add(newdata.UserID);
+      } else if (newdata.Status === "offline") {
+          onlineUsers.delete(newdata.UserID);
+      }
+      updateUserStatus(newdata.UserID, newdata.Status);
     } else {
       displayMessage(newdata);
     }

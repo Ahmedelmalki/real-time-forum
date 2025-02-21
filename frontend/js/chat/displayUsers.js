@@ -1,6 +1,6 @@
 import { debounce } from "../app/helpers.js";
 import {chatArea } from './chatArea.js';
-// import { online } from "./chatHelpers.js";
+import { onlineUsers } from "./chatArea.js";
 
 export async function fetchUsers() {    
     createChat()
@@ -30,35 +30,42 @@ function displayUsers(users){
     for (let i = 0; i < 30; i++){
         const user = users.shift()
         if (user){
-            const userCard = document.createElement('div');
-            userCard.className = 'user-card';
-            console.log(user.Id);
+            // func
+            // const userCard = document.createElement('div');
+            // userCard.className = 'user-card';
             
-            userCard.dataset.userId = user.Id;
+            // userCard.dataset.userId = user.Id;
              
 
-            const profile = document.createElement('div');
-            profile.className = 'profile';
-            profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`
+            // const profile = document.createElement('div');
+            // profile.className = 'profile';
+            // profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`
 
-        //    online(user, profile)
+            //  //online
+            //  const statusDot = document.createElement('div');
+            //  statusDot.className = 'status-dot';
+            //  if (onlineUsers.has(user.Id)) {
+            //      statusDot.classList.add('online');
+            //  }
+            //  profile.appendChild(statusDot);
+
+            // const nickname = document.createElement('div');
+            // nickname.className = 'nickname';
+            // nickname.innerText = `${user.Nickname}`
+
+            // userCard.appendChild(profile);
+            // userCard.appendChild(nickname);
+            // // end func
             
-            const nickname = document.createElement('div');
-            nickname.className = 'nickname';
-            nickname.innerText = `${user.Nickname}`
-
-            userCard.appendChild(profile);
-            userCard.appendChild(nickname);
-            // click on user to display chat area
-            userCard.addEventListener('click', () => {
-                chatArea(user.Nickname);
-            });
+            // // click on user to display chat area
+            // userCard.addEventListener('click', () => {
+            //     chatArea(user.Nickname);
+            // });
+            let userCard = createUserCard( user)
             chat.appendChild(userCard);
         }
     }
 }
-
-
 
 function createChat(){
     const app = document.querySelector('#app');
@@ -72,3 +79,38 @@ function createChat(){
     }
 }
 
+function createUserCard(user ){
+    console.log('uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu')
+    
+    const userCard = document.createElement('div');
+    userCard.className = 'user-card';
+    
+    userCard.dataset.userId = user.Id;
+     
+
+    const profile = document.createElement('div');
+    profile.className = 'profile';
+    profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`
+
+     //online
+     const statusDot = document.createElement('div');
+     statusDot.className = 'status-dot';
+     if (onlineUsers.has(user.Id)) {
+         statusDot.classList.add('online');
+     }
+     profile.appendChild(statusDot);
+
+    const nickname = document.createElement('div');
+    nickname.className = 'nickname';
+    nickname.innerText = `${user.Nickname}`
+
+    userCard.appendChild(profile);
+    userCard.appendChild(nickname);
+    // end func
+    
+    // click on user to display chat area
+    userCard.addEventListener('click', () => {
+        chatArea(user.Nickname);
+    });
+    return userCard;
+}
