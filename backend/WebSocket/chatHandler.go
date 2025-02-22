@@ -112,21 +112,25 @@ func (h *ConnectionManager) Run() {
 			h.Clients[client] = true
 			h.OnlineUsers[client.userID] = true
 			h.OnlineClients[client.userID] = append(h.OnlineClients[client.userID], client)
-
-			for userID := range h.OnlineUsers {
-				statusUpdate := modles.StatusUpdate{
-					UserID: userID,
-					Status: "online",
-				}
-				client.conn.WriteJSON(statusUpdate)
+			allUsers := []int{}
+			for uid := range h.OnlineUsers {
+				allUsers = append(allUsers, uid)
 			}
 
-			statusUpdate := modles.StatusUpdate{
-				UserID: client.userID,
-				Status: "online",
+			statusMsg := struct {
+				Type  string `json:"type"`
+				Users []int  `json:"users"`
+			}{
+				Type:  "users-status",
+				Users: allUsers,
 			}
+
 			for c := range h.Clients {
-				c.conn.WriteJSON(statusUpdate)
+				err := c.conn.WriteJSON(statusMsg)
+				if err != nil {
+					c.conn.Close()
+					delete(h.Clients, c)
+				}
 			}
 			h.Mu.Unlock()
 		case client := <-h.Unregister:
@@ -135,6 +139,7 @@ func (h *ConnectionManager) Run() {
 			if _, ok := h.Clients[client]; ok {
 				delete(h.Clients, client)
 
+				// Remove client from OnlineClients list
 				clients := h.OnlineClients[client.userID]
 				for i, c := range clients {
 					if c == client {
@@ -142,16 +147,33 @@ func (h *ConnectionManager) Run() {
 						break
 					}
 				}
+
+				// If no more connections for the user, mark as offline
 				if len(h.OnlineClients[client.userID]) == 0 {
 					delete(h.OnlineUsers, client.userID)
+				}
 
-					statusUpdate := modles.StatusUpdate{
-						UserID: client.userID,
-						Status: "offline",
-					}
-					for c := range h.Clients {
-						c.conn.WriteJSON(statusUpdate)
-						fmt.Println("########", statusUpdate)
+				// Prepare updated list of online users
+				allUsers := []int{}
+				for uid := range h.OnlineUsers {
+					allUsers = append(allUsers, uid)
+				}
+
+				// Create the unified status message
+				statusMsg := struct {
+					Type  string `json:"type"`
+					Users []int  `json:"users"`
+				}{
+					Type:  "users-status",
+					Users: allUsers,
+				}
+
+				// Broadcast the updated user list to all clients
+				for c := range h.Clients {
+					err := c.conn.WriteJSON(statusMsg)
+					if err != nil {
+						c.conn.Close()
+						delete(h.Clients, c)
 					}
 				}
 			}

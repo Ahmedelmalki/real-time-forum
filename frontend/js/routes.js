@@ -4,7 +4,7 @@ import { renderRegisterForm } from './app/register.js'
 import { renderLoginForm } from './app/login.js';
 import { renderLogout } from './app/logedout.js';
 import { postComments } from './app/comments.js';
-import { fetchUsers } from './chat/displayUsers.js';
+import { fetchUsers } from './chat/chatArea.js'; 
 import {setuplayout} from './setupLayout.js';
 
 

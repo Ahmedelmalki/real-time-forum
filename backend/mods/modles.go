@@ -68,8 +68,3 @@ type Message struct {
 type UserId struct {
 	Val int `json:"Val"`
 }
-
-type StatusUpdate struct {
-	UserID int    `json:"UserID"`
-	Status string `json:"Status"`
-}

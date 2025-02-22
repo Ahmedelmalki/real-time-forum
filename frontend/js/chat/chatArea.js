@@ -1,22 +1,12 @@
 import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory } from "./chatHistory.js";
-import { fetchUsers } from "./displayUsers.js";
+// import { fetchUsers } from "./displayUsers.js";
 import { displayMessage, displaySentMessage } from "./chatHelpers.js";
+import { socket } from "./webSocket.js";
+import { createChat } from "./chatHelpers.js";
+let onlineUsersIds = [];
 
-const socketUrl = `ws://${document.location.host}/ws`;
-export const socket = new WebSocket(socketUrl);
-export const onlineUsers = new Set(); // is there a better way then set()
-
-socket.addEventListener("open", () => {
-  console.log("WebSocket connection opened");
-  fetchUsers();
-});
-
-document.addEventListener("userStatusChanged", (event) => {
-  const { userId, status } = event.detail;
-  updateUserStatus(userId, status);
-});
 
 socket.addEventListener("error", (error) => {
   console.error("WebSocket error:", error);
@@ -29,21 +19,11 @@ socket.addEventListener("close", (event) => {
 socket.onmessage = (eve) => {
   try {
     const newdata = JSON.parse(eve.data);
-    console.log("Before update - onlineUsers:", Array.from(onlineUsers));
-    if (newdata.Status) {
-      if (newdata.Status === "online") {
-        onlineUsers.add(Number(newdata.UserID));
-      } else if (newdata.Status === "offline") {
-        onlineUsers.delete(Number(newdata.UserID));
-      }
-      // ✅ Fire a custom event when the status updates
-      const statusEvent = new CustomEvent("userStatusChanged", {
-        detail: { userId: newdata.UserID, status: newdata.Status },
-      });
-      document.dispatchEvent(statusEvent);
-
-      // Log after modification
-      console.log("After update - onlineUsers:", Array.from(onlineUsers));
+    if (newdata.type === "users-status") {
+      onlineUsersIds = newdata.users;
+      console.log('onlineUsersIds :',onlineUsersIds);
+      
+      updateUserStatus(newdata.users);
     } else {
       displayMessage(newdata);
     }
@@ -77,8 +57,8 @@ export function chatArea(nickname) {
     fetchHistory(nickname);
   });
 
-  document.querySelector(".back-btn").addEventListener("click", () => {
-    fetchUsers();
+  document.querySelector(".back-btn").addEventListener("click", async () => {
+   await fetchUsers();
   });
 
   document
@@ -105,18 +85,78 @@ async function sendMessage(nickname) {
   input.value = "";
 }
 
-function updateUserStatus(userId, status) {
+function updateUserStatus(onlineUserIds) {
   const userCards = document.querySelectorAll(".user-card");
-  userCards.forEach((card) => {
-    if (Number(card.dataset.userId) === Number(userId)) {
-      console.log("card.dataset :", card.dataset); // why this is loged in brave and not in chrome
 
-      const statusDot = card.querySelector(".status-dot");
-      if (status === "online") {
-        statusDot.classList.add("online");
-      } else {
-        statusDot.classList.remove("online");
-      }
+  userCards.forEach((card) => {
+    const userId = Number(card.dataset.userId);
+    const statusDot = card.querySelector(".status-dot");
+
+    if (onlineUserIds.includes(userId)) {
+      statusDot.classList.add("online");
+    } else {
+      statusDot.classList.remove("online");
     }
   });
+}
+
+/**************************** displaying the users ****************************/
+ export async function fetchUsers() {
+  createChat();
+  try {
+    const res = await fetch("/users");
+    if (!res.ok) {
+      throw new Error("Failed to fetch users");
+    }
+    const users = await res.json();
+    document.querySelector("#chat").replaceChildren();
+    displayUsers(users);
+    // debounce displaying the users to not spam the document
+    // const debouncedDisplay = debounce((users) => {
+    //   displayUsers(users, onlineUsersIds);
+    // }, 300);
+
+    // document.addEventListener("scroll", () => {
+    //   debouncedDisplay(users);
+    // });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function displayUsers(users) {
+  const chat = document.querySelector("#chat");
+  for (let i = 0; i < 30; i++) {
+    const user = users.shift();
+    if (user) {
+      const userCard = document.createElement("div");
+      userCard.className = "user-card";
+      userCard.dataset.userId = user.Id;
+
+      const profile = document.createElement("div");
+      profile.className = "profile";
+      profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`;
+
+      //online
+      const statusDot = document.createElement("div");
+      statusDot.className = "status-dot";
+      if (onlineUsersIds.includes(Number(user.Id))) {
+        statusDot.classList.add("online");
+      }
+      
+      const nickname = document.createElement("div");
+      nickname.className = "nickname";
+      nickname.innerText = `${user.Nickname}`;
+      
+      profile.appendChild(statusDot);
+      userCard.appendChild(profile);
+      userCard.appendChild(nickname);
+
+      // click on user to display chat area
+      userCard.addEventListener("click", () => {
+        chatArea(user.Nickname);
+      });
+      chat.appendChild(userCard);
+    }
+  }
 }

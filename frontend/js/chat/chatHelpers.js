@@ -37,3 +37,16 @@ export function displaySentMessage(message) {
     messageCard.appendChild(messageTime);
     messages.appendChild(messageCard);      
 }
+
+export function createChat() {
+    const app = document.querySelector("#app");
+    if (!document.querySelector("#chat")) {
+      const chat = document.createElement("div");
+      chat.className = "chat";
+      chat.id = "chat";
+      chat.href = "/chat";
+      chat.setAttribute("data-link", "/chat");
+      app.appendChild(chat);
+    }
+  }
+  

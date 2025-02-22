@@ -1,5 +1,5 @@
 import { handleRoute } from "../main.js";
-import { socket } from "../chat/chatArea.js";
+import { socket } from "../chat/webSocket.js"; 
 export async function renderLogout() {
   document.querySelector("#button-group").remove();
   document.querySelector("#forum").remove();
