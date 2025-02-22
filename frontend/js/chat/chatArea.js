@@ -2,15 +2,20 @@ import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory } from "./chatHistory.js";
 import { fetchUsers } from "./displayUsers.js";
-import { displayMessage, displaySentMessage, updateUserStatus } from "./chatHelpers.js";
+import { displayMessage, displaySentMessage } from "./chatHelpers.js";
 
-const socketUrl = `ws://${document.location.host}/ws`; 
-const socket = new WebSocket(socketUrl);
+const socketUrl = `ws://${document.location.host}/ws`;
+export const socket = new WebSocket(socketUrl);
 export const onlineUsers = new Set(); // is there a better way then set()
 
 socket.addEventListener("open", () => {
   console.log("WebSocket connection opened");
   fetchUsers();
+});
+
+document.addEventListener("userStatusChanged", (event) => {
+  const { userId, status } = event.detail;
+  updateUserStatus(userId, status);
 });
 
 socket.addEventListener("error", (error) => {
@@ -24,15 +29,21 @@ socket.addEventListener("close", (event) => {
 socket.onmessage = (eve) => {
   try {
     const newdata = JSON.parse(eve.data);
-    console.log(newdata);
-
+    console.log("Before update - onlineUsers:", Array.from(onlineUsers));
     if (newdata.Status) {
       if (newdata.Status === "online") {
-          onlineUsers.add(newdata.UserID);
+        onlineUsers.add(Number(newdata.UserID));
       } else if (newdata.Status === "offline") {
-          onlineUsers.delete(newdata.UserID);
+        onlineUsers.delete(Number(newdata.UserID));
       }
-      updateUserStatus(newdata.UserID, newdata.Status);
+      // ✅ Fire a custom event when the status updates
+      const statusEvent = new CustomEvent("userStatusChanged", {
+        detail: { userId: newdata.UserID, status: newdata.Status },
+      });
+      document.dispatchEvent(statusEvent);
+
+      // Log after modification
+      console.log("After update - onlineUsers:", Array.from(onlineUsers));
     } else {
       displayMessage(newdata);
     }
@@ -92,4 +103,20 @@ async function sendMessage(nickname) {
   displaySentMessage(message);
   socket.send(JSON.stringify(message));
   input.value = "";
+}
+
+function updateUserStatus(userId, status) {
+  const userCards = document.querySelectorAll(".user-card");
+  userCards.forEach((card) => {
+    if (Number(card.dataset.userId) === Number(userId)) {
+      console.log("card.dataset :", card.dataset); // why this is loged in brave and not in chrome
+
+      const statusDot = card.querySelector(".status-dot");
+      if (status === "online") {
+        statusDot.classList.add("online");
+      } else {
+        statusDot.classList.remove("online");
+      }
+    }
+  });
 }

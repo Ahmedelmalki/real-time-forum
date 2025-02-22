@@ -212,8 +212,8 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: #ccc;
-    border: 2px solid white;
+    background-color: rgb(180, 179, 179);
+    border: 1px solid rgb(105, 105, 105);
 }
 
 .status-dot.online {

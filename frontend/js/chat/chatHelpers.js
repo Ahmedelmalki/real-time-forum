@@ -37,20 +37,3 @@ export function displaySentMessage(message) {
     messageCard.appendChild(messageTime);
     messages.appendChild(messageCard);      
 }
-
-export function updateUserStatus(userId, status) {
-    const userCards = document.querySelectorAll('.user-card');
-    userCards.forEach(card => {
-        if (card.dataset.userId === userId) {
-            console.log(card.dataset)
-            
-            const statusDot = card.querySelector('.status-dot');
-            if (status === "online") {
-                statusDot.classList.add('online');
-            } else {
-                statusDot.classList.remove('online');
-            }
-        }
-    });
-}
-
