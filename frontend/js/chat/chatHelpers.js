@@ -48,5 +48,7 @@ export function createChat() {
     chat.href = "/chat";
     chat.setAttribute("data-link", "/chat");
     app.appendChild(chat);
+    chat.style.display = "none";
+    
   }
 }

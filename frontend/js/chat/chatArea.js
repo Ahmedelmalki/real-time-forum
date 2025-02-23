@@ -21,6 +21,8 @@ import { onlineUsersIds } from "./webSocket.js";
 
 export function chatArea(nickname) {
   const chat = document.querySelector("#chat");
+  chat.style.display = "block";
+  document.querySelector("#container").style.display = "none";
   chat.innerHTML = `
         <div id="user-card">
             <div class="chat-header">
@@ -38,7 +40,7 @@ export function chatArea(nickname) {
             </div>
         </div>
     `;
-  let msgctr = document.querySelector(".messages-container")
+  let msgctr = document.querySelector(".messages-container");
   msgctr.addEventListener("scroll",  () => {    
     if (msgctr.scrollTop < 50) {
     fetchHistory(nickname);
@@ -47,6 +49,8 @@ export function chatArea(nickname) {
   });
 
   document.querySelector(".back-btn").addEventListener("click", async () => {
+    chat.style.display = "none";
+    document.querySelector("#container").style.display = "block";
     await fetchUsers();
   });
 
@@ -87,6 +91,7 @@ export function updateUserStatus(onlineUserIds) {
       statusDot.classList.remove("online");
     }
   });
+
 }
 
 /**************************** displaying the users ****************************/
@@ -115,13 +120,15 @@ export async function fetchUsers() {
 }
 
 function displayUsers(users) {
-  const chat = document.querySelector("#chat");
+  const chat = document.querySelector("#gost");
+  chat.innerHTML = ""
   for (let i = 0; i < 30; i++) {
     const user = users.shift();
     if (user) {
       const userCard = document.createElement("div");
       userCard.className = "user-card";
       userCard.dataset.userId = user.Id;
+      
 
       const profile = document.createElement("div");
       profile.className = "profile";
@@ -141,7 +148,6 @@ function displayUsers(users) {
       profile.appendChild(statusDot);
       userCard.appendChild(profile);
       userCard.appendChild(nickname);
-
       // click on user to display chat area
       userCard.addEventListener("click", () => {
         chatArea(user.Nickname);        
