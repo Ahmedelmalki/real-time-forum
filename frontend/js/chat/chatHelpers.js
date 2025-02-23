@@ -1,12 +1,6 @@
 export function displayMessage(data) {
-  const currentChatUser =
-    document.querySelector(".chat-header span").textContent;
-  if (
-    data.Receiver_name !== currentChatUser &&
-    data.Sender_name !== currentChatUser
-  ) {
-    return; // Ignore messages not meant for this chat
-  }
+  console.log('something');
+  
   const messages = document.querySelector("#messages");
   const messageCard = document.createElement("div");
   messageCard.id = "msg-received";

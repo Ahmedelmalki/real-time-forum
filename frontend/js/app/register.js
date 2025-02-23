@@ -1,5 +1,5 @@
 import { handleRoute } from "../main.js";
-
+import { socket } from "../chat/webSocket.js";
 
 export function renderRegisterForm() {
     const container = document.getElementById("container");
@@ -63,6 +63,7 @@ async function registerUser(event) {
     });
     
     if (res.ok) {
+        socket.init();
         history.pushState(null, null, '/');
         await handleRoute();
         return;

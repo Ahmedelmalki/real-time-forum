@@ -73,7 +73,9 @@ func HandleConnections(hub *ConnectionManager, db *sql.DB) http.HandlerFunc {
 		Instead, it sends a request to the hub's Run() method
 		which is constantly listening for such events
 		*/
+		hub.Mu.Lock()
 		client.hub.Register <- client
+		hub.Mu.Unlock()
 
 		defer func() {
 			hub.Unregister <- client

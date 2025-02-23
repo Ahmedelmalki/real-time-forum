@@ -2,6 +2,7 @@
 import { escapeHTML, timeAgo } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 
+export var Msgs = {lastid : 0}
 export async function fetchHistory(receiverNickname) {
   const messages = document.querySelector("#messages");
   if (!messages) {
@@ -11,21 +12,22 @@ export async function fetchHistory(receiverNickname) {
   const id = await isAuthenticated();
   try {
     const res = await fetch(
-      `/dm?receiver=${encodeURIComponent(receiverNickname)}`
+      `/dm?receiver=${encodeURIComponent(receiverNickname)}&lastid=${Msgs.lastid}`
     );
+    console.log('res :',res);
     if (!res.ok) {
       throw new Error("error fetching dm history");
     }
-    const dms = await res.json();
-    //messages.replaceChildren();
+    const dms = await res.json()
+    
+            //messages.replaceChildren();
     // if (dms) displayHistory(dms, id);
 
-    messages.innerHTML = ""; // Clear once before populating
+    // messages.innerHTML = ""; // Clear once before populating
 
     if (dms && dms.length) {
       displayHistory(dms, id);
     } 
-
     // const debouncedDisplay = debounce((dms, id) => {
     //     displayHistory(dms, id)
     // }, 200);
@@ -44,8 +46,7 @@ function displayHistory(dms, id) {
     console.log("error in messages");
     return;
   }
-
-  for (let i = dms.length ; i > 0 ; i++) {
+  for (let i = dms.length ; i >= 0 ; i--) {
     const dm = dms[i];
     console.log(dm);
 
@@ -77,4 +78,9 @@ function displayHistory(dms, id) {
       messages.append(messageCard);
     }
   }
+  messages.scrollTo({
+    top: messages.scrollHeight - 50,
+    behavior: 'auto'
+  })
+  Msgs.lastid = dms[dms.length-1].ID
 }

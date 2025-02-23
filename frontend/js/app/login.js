@@ -1,5 +1,5 @@
 import { handleRoute } from "../main.js";
-
+import { socket } from "../chat/webSocket.js";
 
 export function renderLoginForm() {
     const container = document.getElementById('container')
@@ -34,6 +34,7 @@ async function logUser(event) {
     });
     
     if (res.ok) {
+        socket.init();
         history.pushState(null, null, '/');
         await handleRoute();
         return;

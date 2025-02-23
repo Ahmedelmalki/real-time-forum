@@ -1,36 +1,23 @@
 import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
-import { fetchHistory } from "./chatHistory.js";
+import { fetchHistory, Msgs } from "./chatHistory.js";
 // import { fetchUsers } from "./displayUsers.js";
-import { displayMessage, displaySentMessage } from "./chatHelpers.js";
+import { displaySentMessage } from "./chatHelpers.js";
 import { socket } from "./webSocket.js";
 import { createChat } from "./chatHelpers.js";
-let onlineUsersIds = [];
+import { onlineUsersIds } from "./webSocket.js";
 
+// socket.addEventListener("error", (error) => {
+//   console.error("WebSocket error:", error);
+// });
 
-socket.addEventListener("error", (error) => {
-  console.error("WebSocket error:", error);
-});
+// socket.addEventListener("close", (event) => {
+//   console.log("WebSocket connection closed:", event.code, event.reason);
+// });
 
-socket.addEventListener("close", (event) => {
-  console.log("WebSocket connection closed:", event.code, event.reason);
-});
+// socket.ws.onmessage = (eve) => {
 
-socket.onmessage = (eve) => {
-  try {
-    const newdata = JSON.parse(eve.data);
-    if (newdata.type === "users-status") {
-      onlineUsersIds = newdata.users;
-      console.log('onlineUsersIds :',onlineUsersIds);
-      
-      updateUserStatus(newdata.users);
-    } else {
-      displayMessage(newdata);
-    }
-  } catch (err) {
-    console.error("Error parsing message:", err);
-  }
-};
+// };
 
 export function chatArea(nickname) {
   const chat = document.querySelector("#chat");
@@ -51,14 +38,16 @@ export function chatArea(nickname) {
             </div>
         </div>
     `;
-
-  // later
-  //chat.addEventListener("click", () => {
+  let msgctr = document.querySelector(".messages-container")
+  msgctr.addEventListener("scroll",  () => {    
+    if (msgctr.scrollTop < 50) {
     fetchHistory(nickname);
-  //});
+    console.log(Msgs.lastid);
+    }
+  });
 
   document.querySelector(".back-btn").addEventListener("click", async () => {
-   await fetchUsers();
+    await fetchUsers();
   });
 
   document
@@ -81,11 +70,11 @@ async function sendMessage(nickname) {
     Timestamp: new Date(),
   };
   displaySentMessage(message);
-  socket.send(JSON.stringify(message));
+  socket.ws.send(JSON.stringify(message));
   input.value = "";
 }
 
-function updateUserStatus(onlineUserIds) {
+export function updateUserStatus(onlineUserIds) {
   const userCards = document.querySelectorAll(".user-card");
 
   userCards.forEach((card) => {
@@ -101,7 +90,8 @@ function updateUserStatus(onlineUserIds) {
 }
 
 /**************************** displaying the users ****************************/
- export async function fetchUsers() {
+export async function fetchUsers() {
+  console.log({ socket });
   createChat();
   try {
     const res = await fetch("/users");
@@ -143,18 +133,19 @@ function displayUsers(users) {
       if (onlineUsersIds.includes(Number(user.Id))) {
         statusDot.classList.add("online");
       }
-      
+
       const nickname = document.createElement("div");
       nickname.className = "nickname";
       nickname.innerText = `${user.Nickname}`;
-      
+
       profile.appendChild(statusDot);
       userCard.appendChild(profile);
       userCard.appendChild(nickname);
 
       // click on user to display chat area
       userCard.addEventListener("click", () => {
-        chatArea(user.Nickname);
+        chatArea(user.Nickname);        
+        fetchHistory(nickname);
       });
       chat.appendChild(userCard);
     }

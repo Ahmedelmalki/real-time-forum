@@ -8,9 +8,9 @@ export async function renderLogout() {
     credentials: "same-origin",
   });
   if (res.ok) {
-    socket.close();
     history.pushState(null, null, "/login");
     await handleRoute();
+    socket.ws.close();
   } else {
     let data = await res.text();
     alert(data);
