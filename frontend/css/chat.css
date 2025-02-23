@@ -54,17 +54,16 @@
     display: inline-block;       /* Ensure the message content is inline but block-like */
 }
 
-/* Sent message appearance */
-.message.sent .message-content {
-    background-color: #ffffff;   /* White background */
-    border: 1px solid #e0e0e0;   /* Light border around the bubble */
+/* .message.sent .message-content {
+    background-color: #ffffff;   
+    border: 1px solid #e0e0e0;   
 }
 
-/* Received message appearance */
+
 .message.received .message-content {
-    background-color: #f8f8f8;   /* Light gray background */
-    border: 1px solid #e0e0e0;   /* Light border around the bubble */
-}
+    background-color: #f8f8f8;   
+    border: 1px solid #e0e0e0;   
+} */
 
 /* Add clearfix to ensure proper float handling */
 .messages-container::after {

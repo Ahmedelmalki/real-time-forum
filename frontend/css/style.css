@@ -59,7 +59,7 @@ main {
 }
 
 #container {
-    flex: 0 0 60%;
+    flex: 0 0 50%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;
@@ -70,7 +70,7 @@ main {
 #chat {
    overflow: auto;
 
-    flex: 0 0 40%;
+    flex: 0 0 50%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;

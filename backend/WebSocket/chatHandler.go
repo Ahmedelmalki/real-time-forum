@@ -106,7 +106,6 @@ func (h *ConnectionManager) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			fmt.Println(&client, "register")
 			h.Mu.Lock()
 			/* status update */
 			h.Clients[client] = true
@@ -134,7 +133,6 @@ func (h *ConnectionManager) Run() {
 			}
 			h.Mu.Unlock()
 		case client := <-h.Unregister:
-			fmt.Println(client, "Unregister")
 			h.Mu.Lock()
 			if _, ok := h.Clients[client]; ok {
 				delete(h.Clients, client)

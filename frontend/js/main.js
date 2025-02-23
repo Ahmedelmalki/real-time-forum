@@ -28,11 +28,6 @@ export async function handleRoute() {
   }
 }
 
-/*  this part of the code Listens for clicks on elements 
-    with the data-link attribute (likely navigation links)
-    Prevents the default page reload behavior
-    Updates the URL without refreshing the page using history.pushState
-*/
 document.addEventListener("click", (event) => {
   if (event.target.hasAttribute("data-link")) {
     event.preventDefault();

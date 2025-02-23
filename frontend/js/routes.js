@@ -7,8 +7,6 @@ import { postComments } from './app/comments.js';
 import { fetchUsers } from './chat/chatArea.js'; 
 import {setuplayout} from './setupLayout.js';
 
-
-
 export const router = {
     '/login': renderLoginForm,
     '/register': renderRegisterForm,

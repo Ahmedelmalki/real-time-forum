@@ -53,9 +53,9 @@ export function chatArea(nickname) {
     `;
 
   // later
-  chat.addEventListener("click", () => {
+  //chat.addEventListener("click", () => {
     fetchHistory(nickname);
-  });
+  //});
 
   document.querySelector(".back-btn").addEventListener("click", async () => {
    await fetchUsers();
