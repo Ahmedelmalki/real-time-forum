@@ -23,8 +23,8 @@ export async function handleRoute() {
     await router[currentPath].call();
   } else {
     // Handle 404 or redirect to home
-    history.pushState(null, null, "/");
-    await router["/"].call();
+    // history.pushState(null, null, "/");
+    // await router["/"].call();
   }
 }
 

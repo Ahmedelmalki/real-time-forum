@@ -1,4 +1,3 @@
-//  import { debounce } from "../app/helpers.js";
 import { escapeHTML, timeAgo } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 
@@ -14,27 +13,15 @@ export async function fetchHistory(receiverNickname) {
     const res = await fetch(
       `/dm?receiver=${encodeURIComponent(receiverNickname)}&lastid=${Msgs.lastid}`
     );
-    console.log('res :',res);
+    // console.log('res :',res);
     if (!res.ok) {
       throw new Error("error fetching dm history");
     }
     const dms = await res.json()
-    
-            //messages.replaceChildren();
-    // if (dms) displayHistory(dms, id);
-
-    // messages.innerHTML = ""; // Clear once before populating
 
     if (dms && dms.length) {
       displayHistory(dms, id);
     } 
-    // const debouncedDisplay = debounce((dms, id) => {
-    //     displayHistory(dms, id)
-    // }, 200);
-
-    // document.addEventListener('scroll', () => {
-    //     debouncedDisplay(dms, id);
-    // });
   } catch (error) {
     console.error(error);
   }
@@ -46,7 +33,7 @@ function displayHistory(dms, id) {
     console.log("error in messages");
     return;
   }
-  for (let i = dms.length ; i >= 0 ; i--) {
+  for (let i = dms.legnth-1 ; i >= 0 ; i--) {
     const dm = dms[i];
     console.log(dm);
 

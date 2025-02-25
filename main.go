@@ -30,11 +30,6 @@ func main() {
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			http.Error(w, "page not found", 404)
-			return
-		}
-
 		http.ServeFile(w, r, "./frontend/index.html")
 	})
 
@@ -61,14 +56,14 @@ func main() {
 	})
 
 	mux.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			forum.LogOutHandler(db)(w, r)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
+		forum.LogOutHandler(db)(w, r)
+		// if r.Method == http.MethodPost {
+		// } else {
+		// 	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		// }
 	})
 
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			forum.LoginHandler(db)(w, r)
 		} else {

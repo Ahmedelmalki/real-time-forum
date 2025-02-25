@@ -1,23 +1,10 @@
 import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory, Msgs } from "./chatHistory.js";
-// import { fetchUsers } from "./displayUsers.js";
 import { displaySentMessage } from "./chatHelpers.js";
 import { socket } from "./webSocket.js";
 import { createChat } from "./chatHelpers.js";
 import { onlineUsersIds } from "./webSocket.js";
-
-// socket.addEventListener("error", (error) => {
-//   console.error("WebSocket error:", error);
-// });
-
-// socket.addEventListener("close", (event) => {
-//   console.log("WebSocket connection closed:", event.code, event.reason);
-// });
-
-// socket.ws.onmessage = (eve) => {
-
-// };
 
 export function chatArea(nickname) {
   const chat = document.querySelector("#chat");
@@ -41,10 +28,10 @@ export function chatArea(nickname) {
         </div>
     `;
   let msgctr = document.querySelector(".messages-container");
-  msgctr.addEventListener("scroll",  () => {    
+  msgctr.addEventListener("scroll", () => {
     if (msgctr.scrollTop < 50) {
-    fetchHistory(nickname);
-    console.log(Msgs.lastid);
+      fetchHistory(nickname);
+      console.log(Msgs.lastid);
     }
   });
 
@@ -54,10 +41,11 @@ export function chatArea(nickname) {
     await fetchUsers();
   });
 
-  document
-    .querySelector("#send-btn")
-    .addEventListener("click", () => sendMessage(nickname));
-  document.querySelector("#message-input").addEventListener("keypress", (e) => {
+  const sendBtn = document.querySelector("#send-btn");
+  sendBtn.addEventListener("click", () => sendMessage(nickname));
+
+  const input = document.querySelector("#message-input");
+  input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage(nickname);
   });
 }
@@ -91,12 +79,11 @@ export function updateUserStatus(onlineUserIds) {
       statusDot.classList.remove("online");
     }
   });
-
 }
 
 /**************************** displaying the users ****************************/
 export async function fetchUsers() {
-  console.log({ socket });
+  // console.log({ socket });
   createChat();
   try {
     const res = await fetch("/users");
@@ -106,54 +93,58 @@ export async function fetchUsers() {
     const users = await res.json();
     document.querySelector("#chat").replaceChildren();
     displayUsers(users);
-    // debounce displaying the users to not spam the document
-    // const debouncedDisplay = debounce((users) => {
-    //   displayUsers(users, onlineUsersIds);
-    // }, 300);
-
-    // document.addEventListener("scroll", () => {
-    //   debouncedDisplay(users);
-    // });
   } catch (error) {
     console.error(error);
   }
 }
 
 function displayUsers(users) {
-  const chat = document.querySelector("#gost");
-  chat.innerHTML = ""
-  for (let i = 0; i < 30; i++) {
-    const user = users.shift();
-    if (user) {
-      const userCard = document.createElement("div");
-      userCard.className = "user-card";
-      userCard.dataset.userId = user.Id;
-      
+  createUsresContainer();
+  const chat = document.querySelector("#usres-container");
+  chat.innerHTML = "";
+  users.forEach((user) => {
+    // 
+    const userCard = createUserCard(user);
+    // click on user to display chat area
+    userCard.addEventListener("click", () => {
+      chatArea(user.Nickname);
+      fetchHistory(user.Nickname);
+    });
+    chat.appendChild(userCard);
+  });
+}
 
-      const profile = document.createElement("div");
-      profile.className = "profile";
-      profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`;
+function createUserCard(user) {
+  const userCard = document.createElement("div");
+  userCard.className = "user-card";
+  userCard.dataset.userId = user.Id;
 
-      //online
-      const statusDot = document.createElement("div");
-      statusDot.className = "status-dot";
-      if (onlineUsersIds.includes(Number(user.Id))) {
-        statusDot.classList.add("online");
-      }
+  const profile = document.createElement("div"); // profile picture
+  profile.className = "profile";
+  profile.innerText = `${user.FirstName[0]}${user.LastName[0]}`;
 
-      const nickname = document.createElement("div");
-      nickname.className = "nickname";
-      nickname.innerText = `${user.Nickname}`;
+  const nickname = document.createElement("div"); // user nickname
+  nickname.className = "nickname";
+  nickname.innerText = `${user.Nickname}`;
 
-      profile.appendChild(statusDot);
-      userCard.appendChild(profile);
-      userCard.appendChild(nickname);
-      // click on user to display chat area
-      userCard.addEventListener("click", () => {
-        chatArea(user.Nickname);        
-        fetchHistory(nickname);
-      });
-      chat.appendChild(userCard);
-    }
+  const statusDot = document.createElement("div");
+  statusDot.className = "status-dot";
+  if (onlineUsersIds.includes(Number(user.Id))) {
+    statusDot.classList.add("online");
+  }
+
+  profile.appendChild(statusDot);
+  userCard.appendChild(profile);
+  userCard.appendChild(nickname);
+
+  return userCard;
+}
+
+function createUsresContainer() {
+  if (!document.querySelector("#usres-container")) {
+    const app = document.querySelector("#app");
+    const usersContainer = document.createElement("div");
+    usersContainer.id = "usres-container";
+    app.appendChild(usersContainer);
   }
 }

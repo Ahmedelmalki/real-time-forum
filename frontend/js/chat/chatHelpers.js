@@ -1,5 +1,6 @@
+
 export function displayMessage(data) {
-  console.log('something');
+  // console.log('something');
   
   const messages = document.querySelector("#messages");
   const messageCard = document.createElement("div");
@@ -52,3 +53,5 @@ export function createChat() {
     
   }
 }
+
+

@@ -19,12 +19,12 @@ export const socket = {
         console.log("WebSocket connection closed:", event.code, event.reason);
     },
     onMessage(event) {
-        console.log("WebSocket message received:", event.data);
+        // console.log("WebSocket message received:", event.data);
         try {
             const newdata = JSON.parse(event.data);
             if (newdata.type === "users-status") {
               onlineUsersIds = newdata.users;
-              console.log('onlineUsersIds :',onlineUsersIds);
+              // console.log('onlineUsersIds :',onlineUsersIds);
               
               updateUserStatus(newdata.users);
             } else {
