@@ -27,15 +27,20 @@ export function chatArea(nickname) {
             </div>
         </div>
     `;
+  setupeventlisteners(nickname);
+}
+
+function setupeventlisteners(nickname) {
   let msgctr = document.querySelector(".messages-container");
   msgctr.addEventListener("scroll", () => {
-    if (msgctr.scrollTop < 50) {
+    if (msgctr.scrollTop < 50 && !Msgs.noMoreMessages) {
       fetchHistory(nickname);
-      console.log(Msgs.lastid);
+      console.log('msg.lastid:',Msgs.lastid);
     }
   });
 
-  document.querySelector(".back-btn").addEventListener("click", async () => {
+  const backBtn = document.querySelector(".back-btn");
+  backBtn.addEventListener("click", async () => {
     chat.style.display = "none";
     document.querySelector("#container").style.display = "block";
     await fetchUsers();
@@ -48,7 +53,7 @@ export function chatArea(nickname) {
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage(nickname);
   });
-}
+} 
 
 async function sendMessage(nickname) {
   const input = document.querySelector("#message-input");

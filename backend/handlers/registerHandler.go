@@ -16,10 +16,10 @@ import (
 )
 
 func RegisterHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
+	// if r.Method != "POST" {
+	// 	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	// 	return
+	// }
 
 	var user modles.User
 	json.NewDecoder(r.Body).Decode(&user)

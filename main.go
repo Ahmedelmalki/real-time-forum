@@ -18,9 +18,10 @@ func main() {
 	db := database.InitDB()
 	defer db.Close()
 
-	// working on dm
 	hub := websoc.NewHub()
 	go hub.Run()
+	mux.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("./frontend"))))
+	
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websoc.HandleConnections(hub, db)(w, r)
 	})
@@ -33,7 +34,6 @@ func main() {
 		http.ServeFile(w, r, "./frontend/index.html")
 	})
 
-	mux.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("./frontend"))))
 
 	mux.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
 		forum.APIHandler(db)(w, r)
@@ -90,7 +90,6 @@ func main() {
 		authentication.HandleAuthentication(db)(w, r)
 	})
 
-	/*http.HandleFunc("/like", forum.HandleLikes(db))*/
 
 	fmt.Println("Server is running on http://localhost:4011")
 	log.Fatal(http.ListenAndServe(":4011", mux))

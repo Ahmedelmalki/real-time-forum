@@ -11,14 +11,15 @@ import (
 )
 
 func fetchChat(db *sql.DB, senedr, reciever, lastid int) ([]modles.Message, error) {
+	fmt.Println("fetching chat")
 	if lastid == 0 {
-		query:= `SELECT id FROM chat ORDER BY id DESC LIMIT 1;`
+		query := `SELECT id FROM chat ORDER BY id DESC LIMIT 1;`
 		err := db.QueryRow(query).Scan(&lastid)
 		if err != nil {
 			return nil, fmt.Errorf("query error: %v", err)
 		}
 		lastid++
-	}		
+	}
 	query := `
 		SELECT 
 			chat.content,
@@ -28,13 +29,14 @@ func fetchChat(db *sql.DB, senedr, reciever, lastid int) ([]modles.Message, erro
 			chat.id
 		FROM chat
 		WHERE
-			(sender_id = ? AND receiver_id = ?) OR
-			(sender_id = ? AND receiver_id = ?)
-			AND chat.id <= ?
-			ORDER BY id DESC
-			LIMIT 10;
+			((sender_id = ? AND receiver_id = ?) OR
+			(sender_id = ? AND receiver_id = ?))
+		AND 
+			chat.id < ?
+		ORDER BY id DESC
+		LIMIT 10;
 	`
-	rows, err := db.Query(query, senedr, reciever, reciever, senedr,lastid)
+	rows, err := db.Query(query, senedr, reciever, reciever, senedr, lastid)
 	if err != nil {
 		return nil, fmt.Errorf("query error: %v", err)
 	}
@@ -59,10 +61,10 @@ func fetchChat(db *sql.DB, senedr, reciever, lastid int) ([]modles.Message, erro
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("row iteration error: %v", err)
 	}
-	for i:=0; i<len(chat); i++ {
-		fmt.Println(chat[i].Content)
-	}
-	
+	// for i := range chat {
+	// 	fmt.Println(chat[i].Content)
+	// }
+
 	return chat, nil
 }
 
@@ -74,10 +76,12 @@ func ChatAPIHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		receiverNickname := r.URL.Query().Get("receiver")
-		lastid,err1 := strconv.Atoi(r.URL.Query().Get("lastid"))
+		fmt.Println("receiver:", receiverNickname)
+		lastid, err1 := strconv.Atoi(r.URL.Query().Get("lastid"))
 		if err1 != nil {
 			lastid = 0
 		}
+		fmt.Println("lastid:", lastid)
 		if receiverNickname == "" {
 			http.Error(w, "receiver not specified", http.StatusBadRequest)
 			return

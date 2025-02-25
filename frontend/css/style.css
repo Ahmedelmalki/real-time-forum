@@ -15,6 +15,10 @@ body {
     padding: 1rem;
 }
 
+.error-page{
+    display: none;
+}
+
 #header {
     display: flex;
     justify-content: space-between;  /* This spaces items apart */
@@ -59,7 +63,7 @@ main {
 }
 
 #container {
-    flex: 0 0 50%;
+    flex: 0 0 70%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;
@@ -67,16 +71,26 @@ main {
     overflow-y: auto;
 }
 
-#chat {
-   overflow: auto;
+#users-container{
+    overflow: auto;
 
-    flex: 0 0 50%;
+    flex: 0 0 30%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 85vh;
-    /* overflow-y: auto; */
+}
+
+#chat {
+   overflow: auto;
+
+    flex: 0 0 70%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 85vh;
 }
 
 /* Preserve your existing post styles */

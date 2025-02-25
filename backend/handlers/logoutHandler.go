@@ -8,10 +8,10 @@ import (
 
 func LogOutHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-			return
-		}
+		// if r.Method != http.MethodPost {
+		// 	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		// 	return
+		// }
 
 		cookie, err := r.Cookie("forum_session")
 		if err != nil {
