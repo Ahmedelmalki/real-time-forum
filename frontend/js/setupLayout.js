@@ -1,6 +1,5 @@
 export function setuplayout() {
   if (!document.querySelector("#button-group")) {
-    // <div id="gost"></div>
 
     const header = document.createElement("header");
     header.id = "button-group";
@@ -19,7 +18,7 @@ export function setuplayout() {
     document.getElementById("header").appendChild(h);
     document.getElementById("header").appendChild(header);
     h.addEventListener("click", async () => {
-      window.location.reload();
+      window.location.href = "/";
     });
   }
 }

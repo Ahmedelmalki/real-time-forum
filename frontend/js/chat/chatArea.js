@@ -10,7 +10,7 @@ export function chatArea(nickname) {
   const chat = document.querySelector("#chat");
   chat.style.display = "block";
   document.querySelector("#container").style.display = "none";
-  chat.innerHTML = `
+  chat.innerHTML =/*html*/ `
         <div id="user-card">
             <div class="chat-header">
                 <button class="back-btn">←</button>
@@ -60,14 +60,20 @@ async function sendMessage(nickname) {
   const content = input.value.trim();
   const sender_id = await isAuthenticated();
   if (!content) return;
-  const message = {
+  let message = {
+    Content: content,
+    Sender_id: sender_id,
+    Receiver_name: nickname,
+    Timestamp: null,
+  };
+  
+  socket.ws.send(JSON.stringify(message));
+  displaySentMessage(   message = {
     Content: content,
     Sender_id: sender_id,
     Receiver_name: nickname,
     Timestamp: Date.now(),
-  };
-  displaySentMessage(message);
-  socket.ws.send(JSON.stringify(message));
+  });
   input.value = "";
 }
 
