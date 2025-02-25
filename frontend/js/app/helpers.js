@@ -1,4 +1,4 @@
-import { handleRoute } from "../main.js";
+// import { handleRoute } from "../main.js";
 import { postComments } from "./comments.js";
 
 export function debounce(func, wait) {

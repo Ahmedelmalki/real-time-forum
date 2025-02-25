@@ -5,8 +5,7 @@ export function setuplayout() {
     const header = document.createElement("header");
     header.id = "button-group";
     header.className = "button-group";
-    header.innerHTML = `
-
+    header.innerHTML = /*html*/`
         <button id="logout"  class="logedout" href="/logout" data-link>⏻ logout</button>
         <button id="newPost" class="logedout" href="/newPost" data-link>+ new post</button>
         `;
@@ -19,5 +18,8 @@ export function setuplayout() {
 
     document.getElementById("header").appendChild(h);
     document.getElementById("header").appendChild(header);
+    h.addEventListener("click", async () => {
+      window.location.reload();
+    });
   }
 }

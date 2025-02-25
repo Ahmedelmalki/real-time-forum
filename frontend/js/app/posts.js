@@ -33,7 +33,7 @@ function displayposts(posts) {
         if (post) {
             const postCard = document.createElement('div')
             postCard.className = 'postCard'
-            postCard.innerHTML = `
+            postCard.innerHTML = /*html*/`
             <div class="title"> ${escapeHTML(post.Title)}</div >
              <div class="post-username">by @${escapeHTML(post.Username)}</div>
              <div class="post-content">${escapeHTML(post.Content)}</div>

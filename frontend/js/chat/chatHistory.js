@@ -75,7 +75,7 @@ function createMessageCard(dm, id) {
 
   const messageTime = document.createElement("div");
   messageTime.className = "message-time";
-  messageTime.textContent = timeAgo(new Date(dm.Timestamp));
+  messageTime.textContent = new Date(dm.Timestamp);
 
   messageCard.appendChild(msgSender);
   messageCard.appendChild(messageTime);

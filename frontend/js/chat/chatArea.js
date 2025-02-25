@@ -35,7 +35,7 @@ function setupeventlisteners(nickname) {
   msgctr.addEventListener("scroll", () => {
     if (msgctr.scrollTop < 50 && !Msgs.noMoreMessages) {
       fetchHistory(nickname);
-      console.log('msg.lastid:',Msgs.lastid);
+      console.log("msg.lastid:", Msgs.lastid);
     }
   });
 
@@ -53,7 +53,7 @@ function setupeventlisteners(nickname) {
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage(nickname);
   });
-} 
+}
 
 async function sendMessage(nickname) {
   const input = document.querySelector("#message-input");
@@ -64,7 +64,7 @@ async function sendMessage(nickname) {
     Content: content,
     Sender_id: sender_id,
     Receiver_name: nickname,
-    Timestamp: new Date(),
+    Timestamp: Date.now(),
   };
   displaySentMessage(message);
   socket.ws.send(JSON.stringify(message));
@@ -108,10 +108,11 @@ function displayUsers(users) {
   const chat = document.querySelector("#usres-container");
   chat.innerHTML = "";
   users.forEach((user) => {
-    // 
+    //
     const userCard = createUserCard(user);
     // click on user to display chat area
     userCard.addEventListener("click", () => {
+      Msgs.lastid = 0;
       chatArea(user.Nickname);
       fetchHistory(user.Nickname);
     });

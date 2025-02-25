@@ -3,7 +3,7 @@ export const showErrorPage = (status) => {
     if (status === 404 || status === 500) {
       const container = document.getElementById('container') || document.body;
       container.style.display = 'flex';
-      container.innerHTML = `
+      container.innerHTML = /*html*/`
           <div class="error-content">
             <i class="fa-solid ${status === 404 ? 'fa-circle-question' : 'fa-triangle-exclamation'} error-icon"></i>
             <h1>${status}</h1>

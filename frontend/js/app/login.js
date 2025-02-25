@@ -14,7 +14,7 @@ export function renderLoginForm() {
           <input type="password" id="loginPassword" placeholder="Enter your password" required><br>
           <button type="submit">Login</button>
         </form>
-        <button id="register"  href="/register" data-link>Register</button>
+        <button id="register" href="/register" data-link>Register</button>
     </div>
     `;
   document.getElementById("loginForm").addEventListener("submit", logUser);

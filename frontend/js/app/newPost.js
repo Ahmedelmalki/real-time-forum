@@ -4,29 +4,29 @@ const container = document.getElementById('container');
 
 
 export function renderNewPost() {
-  container.innerHTML = `
+  container.innerHTML =/*html*/ `
   <form id="newPostForm" >
-      <h for="title">Title:</h>
+      <label for="title">Title:</label>
       <input type="text" maxlength="50" id="title" name="title" required />
 
-      <h for="content">Content:</h>
+      <label for="content">Content:</label>
       <textarea id="content" maxlength="1000" name="content" rows="5" required></textarea>
 
       <!-- we change it to check box so the user can chose one or more categories -->
       <div>
-      <div>
-          <input type="checkbox" name="categories[]" value="tech" id="category-tech" />
-          <label for="category-tech">Tech</label>
-        </div>
-        <div>
-          <input type="checkbox" name="categories[]" value="science" id="category-science" />
-          <label for="category-science">Science</label>
-        </div>
-        <div>
-          <input type="checkbox" name="categories[]" value="sport" id="category-sport" />
-          <label for="category-sport">Sport</label>
-        </div>
-      </div1>
+         <div>
+             <input type="checkbox" name="categories[]" value="tech" id="category-tech" />
+             <label for="category-tech">Tech</label>
+           </div>
+           <div>
+             <input type="checkbox" name="categories[]" value="science" id="category-science" />
+             <label for="category-science">Science</label>
+           </div>
+           <div>
+             <input type="checkbox" name="categories[]" value="sport" id="category-sport" />
+             <label for="category-sport">Sport</label>
+           </div>
+      </div>
       <button type="submit" id="createPostButton" class="create-post">Create Post</button>
       <button type="button" class="btn back-btn" href="/" data-link>Back to Home</button>
     </form>

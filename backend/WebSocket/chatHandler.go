@@ -88,13 +88,20 @@ func HandleConnections(hub *ConnectionManager, db *sql.DB) http.HandlerFunc {
 			}
 			var msg modles.Message
 			if err := json.Unmarshal(mssg, &msg); err != nil {
+				fmt.Println("Error", err)
 				continue
 			}
-			db.QueryRow(`SELECT id FROM users WHERE nickname = ? `, msg.ReceiverName).Scan(&msg.ReceiverID)
-			db.Exec(`
+			err = db.QueryRow(`SELECT id FROM users WHERE nickname = ? `, msg.ReceiverName).Scan(&msg.ReceiverID)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
+			_, err = db.Exec(`
 					INSERT INTO chat (content, sender_id, receiver_id)
 					VALUES (?, ?, ?)
         	`, msg.Content, msg.SenderID, msg.ReceiverID)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
 
 			hub.Mu.Lock()
 			// Queues the message to be sent to the right user

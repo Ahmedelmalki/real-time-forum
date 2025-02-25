@@ -1,3 +1,4 @@
+import { timeAgo } from "../app/helpers.js";
 
 export function displayMessage(data) {
   // console.log('something');
@@ -13,7 +14,7 @@ export function displayMessage(data) {
 
   const messageTime = document.createElement("div");
   messageTime.className = "time-received";
-  messageTime.textContent = new Date(data.Timestamp);
+  messageTime.textContent = timeAgo(new Date(data.Timestamp));
 
   messageCard.appendChild(messageContent);
   messageCard.appendChild(messageTime);
