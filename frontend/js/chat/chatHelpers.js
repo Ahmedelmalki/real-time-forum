@@ -1,8 +1,8 @@
 
-export function displayMessage(data) {
-  // console.log('something');
-  
+export function displayMessage(data) {  
   const messages = document.querySelector("#messages");
+  console.log("data", data);
+  
   const messageCard = document.createElement("div");
   messageCard.id = "msg-received";
   messageCard.className = "message";
@@ -15,8 +15,8 @@ export function displayMessage(data) {
   messageTime.className = "time-received";
   messageTime.textContent = new Date(data.Timestamp);
 
-  messageCard.appendChild(messageContent);
   messageCard.appendChild(messageTime);
+  messageCard.appendChild(messageContent);
   messages.append(messageCard);
 }
 
@@ -35,8 +35,8 @@ export function displaySentMessage(message) {
   messageTime.className = "time-sent";
   messageTime.textContent = new Date(message.Timestamp);
 
-  messageCard.appendChild(messageContent);
   messageCard.appendChild(messageTime);
+  messageCard.appendChild(messageContent);
   messages.appendChild(messageCard);
 }
 
@@ -53,5 +53,6 @@ export function createChat() {
     
   }
 }
+
 
 

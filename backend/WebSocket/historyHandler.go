@@ -11,7 +11,6 @@ import (
 )
 
 func fetchChat(db *sql.DB, senedr, reciever, lastid int) ([]modles.Message, error) {
-	fmt.Println("fetching chat")
 	if lastid == 0 {
 		query := `SELECT id FROM chat ORDER BY id DESC LIMIT 1;`
 		err := db.QueryRow(query).Scan(&lastid)
@@ -100,7 +99,6 @@ func ChatAPIHandler(db *sql.DB) http.HandlerFunc {
 		if err1 != nil {
 			lastid = 0
 		}
-		fmt.Println("lastid:", lastid)
 		if receiverNickname == "" {
 			http.Error(w, "receiver not specified", http.StatusBadRequest)
 			return

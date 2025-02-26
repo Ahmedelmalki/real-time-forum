@@ -1,5 +1,5 @@
 import { escapeHTML } from "../app/helpers.js";
-import { isAuthenticated } from "../authentication/isAuth.js";
+// import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory, Msgs } from "./chatHistory.js";
 import { displaySentMessage } from "./chatHelpers.js";
 import { socket } from "./webSocket.js";
@@ -55,22 +55,19 @@ function setupeventlisteners(nickname) {
   });
 }
 
-async function sendMessage(nickname) {
+ function sendMessage(nickname) {
   const input = document.querySelector("#message-input");
   const content = input.value.trim();
-  const sender_id = await isAuthenticated();
   if (!content) return;
   let message = {
     Content: content,
-    Sender_id: sender_id,
     Receiver_name: nickname,
     Timestamp: null,
   };
   
   socket.ws.send(JSON.stringify(message));
   displaySentMessage(   message = {
-    Content: content,
-    Sender_id: sender_id,
+    Content: content ,
     Receiver_name: nickname,
     Timestamp: Date.now(),
   });
@@ -102,6 +99,7 @@ export async function fetchUsers() {
       throw new Error("Failed to fetch users");
     }
     const users = await res.json();
+    
     document.querySelector("#chat").replaceChildren();
     displayUsers(users);
   } catch (error) {
@@ -119,7 +117,7 @@ function displayUsers(users) {
     // click on user to display chat area
     userCard.addEventListener("click", () => {
       Msgs.lastid = 0;
-      chatArea(user.Nickname);
+      chatArea(user.Nickname);      
       fetchHistory(user.Nickname);
     });
     chat.appendChild(userCard);
@@ -160,3 +158,4 @@ function createUsresContainer() {
     app.appendChild(usersContainer);
   }
 }
+

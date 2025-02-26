@@ -1,16 +1,15 @@
-import { escapeHTML, timeAgo } from "../app/helpers.js";
+import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 
 export var Msgs = {lastid : 0}
 export async function fetchHistory(receiverNickname) {
-  console.log('fetchHistory');
   
   const messages = document.querySelector("#messages");
   if (!messages) {
     console.error("Messages container not found");
     return;
   }
-  const id = await isAuthenticated();
+  const id = await isAuthenticated(); // why 
   try {
     const res = await fetch(
       `/dm?receiver=${encodeURIComponent(receiverNickname)}&lastid=${Msgs.lastid}`
@@ -36,7 +35,6 @@ function displayHistory(dms, id) {
     return;
   }
   dms.reverse().forEach(dm => {
-    // console.log(dm);
     console.log( ' Msgs.lastid',Msgs.lastid);
     
     if (dm) {

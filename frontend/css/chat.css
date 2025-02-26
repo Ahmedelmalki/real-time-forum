@@ -51,7 +51,8 @@
     padding: 8px 12px;           /* Space inside the message bubble */
     border-radius: 8px;          /* Rounded corners */
     word-wrap: break-word;       /* Break long words to fit inside bubble */
-    display: inline-block;       /* Ensure the message content is inline but block-like */
+    display: inline-block;     
+    border: 1px solid ;
 }
 
 /* .message.sent .message-content {

@@ -56,6 +56,19 @@ body {
     background-color: #333;
 }
 
+#logout {
+    display: flex;
+    align-items: center;  /* Align image and text vertically */
+    gap: 0.5rem; /* Space between image and text */
+    padding: 0.3rem 1rem;
+}
+
+#logout img {
+    height: 20px;  /* Adjust size as needed */
+    width: auto;
+    display: block; /* Ensures no extra space around the image */
+}
+
 main {
     display: flex;
     gap: 1rem;
