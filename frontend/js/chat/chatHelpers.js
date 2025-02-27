@@ -1,5 +1,5 @@
 
-export function displayMessage(data) {  
+export function displayMessage(data) {  // repetition 2 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   const messages = document.querySelector("#messages");
   
   const messageCard = document.createElement("div");
@@ -25,12 +25,10 @@ export function displayMessage(data) {
   messageWrapper.className = "message-wrapper";
   messageWrapper.appendChild(messageContent);
   messageWrapper.appendChild(messageTime);
-  // messageCard.appendChild(messageTime);
-  // messageCard.appendChild(messageContent);
   messages.append(messageWrapper);
 }
 
-export function displaySentMessage(message) {
+export function displaySentMessage(message) { // repetition 3 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   const messages = document.querySelector("#messages");
 
   const messageCard = document.createElement("div");
@@ -55,9 +53,6 @@ export function displaySentMessage(message) {
   messageWrapper.className = "message-wrapper";
   messageWrapper.appendChild(messageContent);
   messageWrapper.appendChild(messageTime);
-
-  // messageCard.appendChild(messageTime);
-  // messageCard.appendChild(messageContent);
   messages.appendChild(messageWrapper);
 }
 
@@ -83,7 +78,7 @@ export function showNotification(sender){
   notif.textContent = `you have a message from ${sender}`
   const x = document.createElement("span");
   x.className = "close";
-  x.textContent = "x";
+  x.textContent = "X";
   x.onclick = function(){
     notif.remove();
   }

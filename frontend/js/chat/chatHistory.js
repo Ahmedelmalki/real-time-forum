@@ -35,6 +35,8 @@ function displayHistory(dms, id) {
     return;
   }
   dms.reverse().forEach(dm => {
+    console.log('dm :', dm);
+    
     console.log( ' Msgs.lastid',Msgs.lastid);
     
     if (dm) {
@@ -52,7 +54,7 @@ function displayHistory(dms, id) {
   }
 }
 
-function createMessageCard(dm, id) {
+function createMessageCard(dm, id) { // 1  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   const messageCard = document.createElement("div");
   messageCard.className = "message";
   messageCard.dataset.messageId = dm.ID;

@@ -27,7 +27,7 @@ func InitDB() *sql.DB {
 	if err != nil {
 		log.Fatalf("Failed to read SQL script file: %v", err)
 	}
-	_, err = db.Exec(string(scriptContent)+DummyPosts)
+	_, err = db.Exec(string(scriptContent)+DummyPosts+DummyAcounts)
 	if err != nil {
 		log.Fatalf("Failed to execute SQL script: %v", err)
 	}

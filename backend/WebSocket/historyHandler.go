@@ -19,19 +19,6 @@ func fetchChat(db *sql.DB, senedr, reciever, lastid int) ([]modles.Message, erro
 		}
 		lastid++
 	}
-	/*
-		query is a SQL query string that retrieves the chat history between two users from the database.
-		It selects the chat content, sent timestamp, sender and receiver IDs, sender and receiver nicknames, and chat ID.
-		The query joins the chat table with the users table twice to get the nicknames of both the sender and receiver.
-		The results are filtered to include only messages exchanged between the two specified users and with chat IDs less than a given value.
-		The results are ordered by chat ID in descending order and limited to the 10 most recent messages.
-		Parameters:
-			- sender_id: ID of the sender
-			- receiver_id: ID of the receiver
-			- sender_id: ID of the sender (repeated for the OR condition)
-			- receiver_id: ID of the receiver (repeated for the OR condition)
-			- chat_id: ID of the last chat message to start retrieving from (for pagination)
-	*/
 	query := `
 		SELECT 
 			chat.content,
