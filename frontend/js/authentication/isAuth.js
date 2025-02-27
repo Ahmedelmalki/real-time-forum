@@ -1,5 +1,4 @@
 export async function isAuthenticated() {
-   // return document.cookie.includes('forum_session=');
     const res = await fetch('/user_id');
     if (!res.ok) {
         console.error('error fetching user id');

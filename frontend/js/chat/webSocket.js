@@ -1,5 +1,5 @@
 import { updateUserStatus } from "./chatArea.js";
-import { displayMessage } from "./chatHelpers.js";
+import { displayMessage, showNotification } from "./chatHelpers.js";
 export let onlineUsersIds = [];
 
 export const socket = {
@@ -21,13 +21,20 @@ export const socket = {
     try {
       const msgContainer = document.querySelector(".messages-container");
       const newdata = JSON.parse(event.data);
+      console.log('newdata :', newdata);
+      
       if (newdata.type === "users-status") {
         onlineUsersIds = newdata.users;
         updateUserStatus(newdata.users);
       } else if (msgContainer) {
+        console.log('newdata.type',newdata.type);
+        
         displayMessage(newdata);
       } else {
       //show notification
+      console.log('newdata.Sender_name',newdata.Sender_name);
+      
+      showNotification(newdata.Sender_name)
       }
     } catch (err) {
       console.error("Error parsing message:", err);
@@ -41,3 +48,4 @@ export const socket = {
   },
 };
 socket.init();
+

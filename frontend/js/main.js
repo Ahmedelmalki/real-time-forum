@@ -1,6 +1,5 @@
 import { router } from "./routes.js";
 import { isAuthenticated } from "./authentication/isAuth.js";
-import { showErrorPage } from "./app/errorPage.js";
 
 const publicRoutes = ["/login", "/register"];
 const protectedRoutes = ["/", "/newPost", "/logout", "/comment"];
@@ -23,12 +22,12 @@ export async function handleRoute() {
 
     if (router[currentPath]) {
       await router[currentPath].call();
-    } else {
-      showErrorPage(404);
+    } else{
+      await router["/"].call();
+      return;
     }
   } catch (e) {
     console.error("Routing Error:", e);
-    showErrorPage(500, "Something went wrong during navigation.");
   }
 }
 

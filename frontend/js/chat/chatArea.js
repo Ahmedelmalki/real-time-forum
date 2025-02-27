@@ -56,19 +56,26 @@ function setupeventlisteners(nickname) {
 }
 
  function sendMessage(nickname) {
+  const sender = document.querySelector('.profileNicknime').textContent.trim();
+  console.log('sender',sender);
+  
   const input = document.querySelector("#message-input");
   const content = input.value.trim();
   if (!content) return;
   let message = {
+    Type : "DM",
     Content: content,
     Receiver_name: nickname,
+    Sender_name: sender,
     Timestamp: null,
   };
   
   socket.ws.send(JSON.stringify(message));
   displaySentMessage(   message = {
+    Type : "DM",
     Content: content ,
     Receiver_name: nickname,
+    Sender_name: sender,
     Timestamp: Date.now(),
   });
   input.value = "";
@@ -91,7 +98,6 @@ export function updateUserStatus(onlineUserIds) {
 
 /**************************** displaying the users ****************************/
 export async function fetchUsers() {
-  // console.log({ socket });
   createChat();
   try {
     const res = await fetch("/users");
@@ -99,7 +105,6 @@ export async function fetchUsers() {
       throw new Error("Failed to fetch users");
     }
     const users = await res.json();
-    
     document.querySelector("#chat").replaceChildren();
     displayUsers(users);
   } catch (error) {
@@ -112,9 +117,7 @@ function displayUsers(users) {
   const chat = document.querySelector("#usres-container");
   chat.innerHTML = "";
   users.forEach((user) => {
-    //
     const userCard = createUserCard(user);
-    // click on user to display chat area
     userCard.addEventListener("click", () => {
       Msgs.lastid = 0;
       chatArea(user.Nickname);      
@@ -124,6 +127,7 @@ function displayUsers(users) {
   });
 }
 
+/************************* helper functions **********************************/
 function createUserCard(user) {
   const userCard = document.createElement("div");
   userCard.className = "user-card";

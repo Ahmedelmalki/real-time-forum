@@ -90,6 +90,9 @@ func main() {
 		authentication.HandleAuthentication(db)(w, r)
 	})
 
+	mux.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+		forum.ProfileApi(db)(w, r)
+	})
 
 	fmt.Println("Server is running on http://localhost:4011")
 	log.Fatal(http.ListenAndServe(":4011", mux))
