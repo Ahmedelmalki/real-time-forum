@@ -15,6 +15,10 @@ body {
     padding: 1rem;
 }
 
+.error-page{
+    display: none;
+}
+
 #header {
     display: flex;
     justify-content: space-between;  /* This spaces items apart */
@@ -52,6 +56,19 @@ body {
     background-color: #333;
 }
 
+#logout {
+    display: flex;
+    align-items: center;  /* Align image and text vertically */
+    gap: 0.5rem; /* Space between image and text */
+    padding: 0.3rem 1rem;
+}
+
+#logout img {
+    height: 20px;  /* Adjust size as needed */
+    width: auto;
+    display: block; /* Ensures no extra space around the image */
+}
+
 main {
     display: flex;
     gap: 1rem;
@@ -59,7 +76,7 @@ main {
 }
 
 #container {
-    flex: 0 0 60%;
+    flex: 0 0 70%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;
@@ -67,15 +84,26 @@ main {
     overflow-y: auto;
 }
 
-#chat {
-   overflow: auto;
+#users-container{
+    overflow: auto;
 
-    flex: 0 0 40%;
+    flex: 0 0 30%;
     background-color: #fff;
     padding: 1rem;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* overflow-y: auto; */
+    height: 85vh;
+}
+
+#chat {
+   overflow: auto;
+
+    flex: 0 0 70%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 85vh;
 }
 
 /* Preserve your existing post styles */
@@ -415,3 +443,34 @@ main {
 }
 
 
+.profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-right: 1rem;
+}
+
+.profilePic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    background-color: #ddd;
+    font-size: 0.8rem; /* Reduced font size */
+    overflow: hidden; /* Prevent text overflow */
+    flex-shrink: 0; /* Prevent circle from shrinking */
+}
+
+.profileNicknime {
+    font-size: 0.9rem;
+    color: #333;
+    white-space: nowrap;
+    font-weight: normal;
+    display: inline-block; /* Ensures proper text layout */
+    vertical-align: middle;
+}

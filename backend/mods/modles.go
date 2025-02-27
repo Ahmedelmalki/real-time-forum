@@ -9,17 +9,6 @@ type LoginCredentials struct {
 	Password string `json:"password"`
 }
 
-type User struct {
-	ID        int    `json:"Id"`
-	Nickname  string `json:"Nickname"`
-	Age       string `json:"Age"`
-	Gender    string `json:"Gender"`
-	FirstName string `json:"FirstName"`
-	LastName  string `json:"LastName"`
-	Email     string `json:"Email"`
-	Password  string `json:"Password"`
-}
-
 type NewPost struct {
 	Title      string   `json:"title"`
 	Content    string   `json:"content"`
@@ -55,6 +44,17 @@ type Comment struct {
 	Type         string `json:"Type"`
 }*/
 
+type User struct {
+	ID        int    `json:"Id"`
+	Nickname  string `json:"Nickname"`
+	Age       string `json:"Age"`
+	Gender    string `json:"Gender"`
+	FirstName string `json:"FirstName"`
+	LastName  string `json:"LastName"`
+	Email     string `json:"Email"`
+	Password  string `json:"Password"`
+}
+
 type Message struct {
 	Type         string    `json:"Dm"`
 	Content      string    `json:"Content"`
@@ -63,13 +63,9 @@ type Message struct {
 	ReceiverName string    `json:"Receiver_name"`
 	SenderName   string    `json:"Sender_name"`
 	Timestamp    time.Time `json:"Timestamp"`
+	ID           string    `json:"ID"`
 }
 
 type UserId struct {
 	Val int `json:"Val"`
-}
-
-type StatusUpdate struct {
-	UserID int    `json:"UserID"`
-	Status string `json:"Status"`
 }

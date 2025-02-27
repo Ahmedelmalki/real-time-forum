@@ -7,9 +7,28 @@ import (
 	"net/http"
 	"real-time-forum/backend/authentication"
 	modles "real-time-forum/backend/mods"
+	"slices"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
+
+type ConnectionManager struct {
+	Clients    map[*Client]bool
+	Register   chan *Client
+	Unregister chan *Client
+	Send       chan modles.Message
+	Mu         sync.Mutex
+	// tracks online status by userID
+	OnlineUsers   map[int]bool
+	OnlineClients map[int][]*Client
+}
+
+type Client struct {
+	hub    *ConnectionManager
+	conn   *websocket.Conn
+	userID int
+}
 
 var Upgrader = websocket.Upgrader{
 	// If the CheckOrigin field is nil, then the Upgrader uses a safe default:
@@ -20,8 +39,8 @@ var Upgrader = websocket.Upgrader{
 	},
 }
 
-func NewHub() *Hub {
-	return &Hub{
+func NewHub() *ConnectionManager {
+	return &ConnectionManager{
 		Register:      make(chan *Client),
 		Unregister:    make(chan *Client),
 		Clients:       make(map[*Client]bool),
@@ -31,7 +50,7 @@ func NewHub() *Hub {
 	}
 }
 
-func HandleConnections(hub *Hub, db *sql.DB) http.HandlerFunc {
+func HandleConnections(hub *ConnectionManager, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := authentication.IsLoged(db, r)
 		if userID == 0 {
@@ -49,7 +68,14 @@ func HandleConnections(hub *Hub, db *sql.DB) http.HandlerFunc {
 			conn:   conn,
 			userID: userID,
 		}
+
+		/*This doesn’t immediately add the client to the hub
+		Instead, it sends a request to the hub's Run() method
+		which is constantly listening for such events
+		*/
+		hub.Mu.Lock()
 		client.hub.Register <- client
+		hub.Mu.Unlock()
 
 		defer func() {
 			hub.Unregister <- client
@@ -62,74 +88,110 @@ func HandleConnections(hub *Hub, db *sql.DB) http.HandlerFunc {
 			}
 			var msg modles.Message
 			if err := json.Unmarshal(mssg, &msg); err != nil {
+				fmt.Println("Error", err)
 				continue
 			}
-			db.QueryRow(`SELECT id FROM users WHERE nickname = ? `, msg.ReceiverName).Scan(&msg.ReceiverID)
-			db.Exec(`
+			fmt.Println("message",)
+			err = db.QueryRow(`SELECT id FROM users WHERE nickname = ? `, msg.ReceiverName).Scan(&msg.ReceiverID)
+			fmt.Println("rrrrrrrrrrr",msg.ReceiverID)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
+
+			msg.SenderID = authentication.IsLoged(db, r)
+			fmt.Println("iiiiiiiiiiiiiii", msg.SenderID)
+
+			_, err = db.Exec(`
 					INSERT INTO chat (content, sender_id, receiver_id)
 					VALUES (?, ?, ?)
         	`, msg.Content, msg.SenderID, msg.ReceiverID)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
 
 			hub.Mu.Lock()
+			// Queues the message to be sent to the right user
 			hub.Send <- msg
 			hub.Mu.Unlock()
 		}
 	}
 }
 
-// note : ma dkhl l taw7da
-func (h *Hub) Run() {
+func (h *ConnectionManager) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			fmt.Println(client, "register")
 			h.Mu.Lock()
 			/* status update */
 			h.Clients[client] = true
 			h.OnlineUsers[client.userID] = true
 			h.OnlineClients[client.userID] = append(h.OnlineClients[client.userID], client)
-			statusUpdate := modles.StatusUpdate{
-				UserID: client.userID,
-				Status: "online",
+			allUsers := []int{}
+			for uid := range h.OnlineUsers {
+				allUsers = append(allUsers, uid)
 			}
+
+			statusMsg := struct {
+				Type  string `json:"type"`
+				Users []int  `json:"users"`
+			}{
+				Type:  "users-status",
+				Users: allUsers,
+			}
+
 			for c := range h.Clients {
-				fmt.Println(statusUpdate)
-				c.conn.WriteJSON(statusUpdate)
+				err := c.conn.WriteJSON(statusMsg)
+				if err != nil {
+					c.conn.Close()
+					delete(h.Clients, c)
+				}
 			}
 			h.Mu.Unlock()
 		case client := <-h.Unregister:
-			fmt.Println(client, "Unregister")
 			h.Mu.Lock()
-			// if _, ok := h.Clients[client]; ok {
-			// 	delete(h.Clients, client)
-			// 	// close(client.hub.Send)
-			// }
 			if _, ok := h.Clients[client]; ok {
 				delete(h.Clients, client)
 
-
+				// Remove client from OnlineClients list
 				clients := h.OnlineClients[client.userID]
 				for i, c := range clients {
 					if c == client {
-						h.OnlineClients[client.userID] = append(clients[:i], clients[i+1:]...)
+						h.OnlineClients[client.userID] = slices.Delete(clients, i, i+1)
 						break
 					}
 				}
+
+				// If no more connections for the user, mark as offline
 				if len(h.OnlineClients[client.userID]) == 0 {
 					delete(h.OnlineUsers, client.userID)
+				}
 
-					statusUpdate := modles.StatusUpdate{
-						UserID: client.userID,
-						Status: "offline",
-					}
-					for c := range h.Clients {
-						c.conn.WriteJSON(statusUpdate)
-						fmt.Println("########",statusUpdate)
+				// Prepare updated list of online users
+				allUsers := []int{}
+				for uid := range h.OnlineUsers {
+					allUsers = append(allUsers, uid)
+				}
+
+				// Create the unified status message
+				statusMsg := struct {
+					Type  string `json:"type"`
+					Users []int  `json:"users"`
+				}{
+					Type:  "users-status",
+					Users: allUsers,
+				}
+
+				// Broadcast the updated user list to all clients
+				for c := range h.Clients {
+					err := c.conn.WriteJSON(statusMsg)
+					if err != nil {
+						c.conn.Close()
+						delete(h.Clients, c)
 					}
 				}
 			}
 			h.Mu.Unlock()
-		case message := <-h.Send:
+		case message := <-h.Send: // Picks up the message and delivers it
 			h.Mu.Lock()
 			for client := range h.Clients {
 				if client.userID == message.ReceiverID {

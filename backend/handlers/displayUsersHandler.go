@@ -11,7 +11,8 @@ import (
 
 func selectUsers(db *sql.DB, r *http.Request) ([]modles.User, error) {
 	user_id := authentication.IsLoged(db, r)
-	query := `   SELECT DISTINCT
+	query := `  
+		SELECT DISTINCT
             u.id,
             u.nickname,
             u.firstname,
