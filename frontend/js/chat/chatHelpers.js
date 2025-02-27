@@ -12,11 +12,22 @@ export function displayMessage(data) {
 
   const messageTime = document.createElement("div");
   messageTime.className = "time-received";
-  messageTime.textContent = new Date(data.Timestamp);
+  messageTime.classList.add("message-time");
+  const date = new Date(data.Timestamp);
 
-  messageCard.appendChild(messageTime);
-  messageCard.appendChild(messageContent);
-  messages.append(messageCard);
+  messageTime.textContent = date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  });
+
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
+  messageWrapper.appendChild(messageContent);
+  messageWrapper.appendChild(messageTime);
+  // messageCard.appendChild(messageTime);
+  // messageCard.appendChild(messageContent);
+  messages.append(messageWrapper);
 }
 
 export function displaySentMessage(message) {
@@ -32,11 +43,22 @@ export function displaySentMessage(message) {
 
   const messageTime = document.createElement("div");
   messageTime.className = "time-sent";
-  messageTime.textContent = new Date(message.Timestamp);
+  messageTime.classList.add("message-time");
+  const date = new Date(message.Timestamp);
+  messageTime.textContent = date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  });
 
-  messageCard.appendChild(messageTime);
-  messageCard.appendChild(messageContent);
-  messages.appendChild(messageCard);
+  const messageWrapper = document.createElement("div");
+  messageWrapper.className = "message-wrapper";
+  messageWrapper.appendChild(messageContent);
+  messageWrapper.appendChild(messageTime);
+
+  // messageCard.appendChild(messageTime);
+  // messageCard.appendChild(messageContent);
+  messages.appendChild(messageWrapper);
 }
 
 export function createChat() {

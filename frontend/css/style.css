@@ -443,15 +443,34 @@ main {
 }
 
 
-.profilePic{
+.profile-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-right: 1rem;
+}
+
+.profilePic {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    border: 2px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color:rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
     background-color: #ddd;
-    font-size: 1rem;
+    font-size: 0.8rem; /* Reduced font size */
+    overflow: hidden; /* Prevent text overflow */
+    flex-shrink: 0; /* Prevent circle from shrinking */
+}
+
+.profileNicknime {
+    font-size: 0.9rem;
+    color: #333;
+    white-space: nowrap;
+    font-weight: normal;
+    display: inline-block; /* Ensures proper text layout */
+    vertical-align: middle;
 }

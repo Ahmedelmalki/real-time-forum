@@ -73,11 +73,20 @@ function createMessageCard(dm, id) {
 
   const messageTime = document.createElement("div");
   messageTime.className = "message-time";
-  messageTime.textContent = new Date(dm.Timestamp);
+ // Format time to only show hours and minutes
+ const date = new Date(dm.Timestamp);
+ messageTime.textContent = date.toLocaleTimeString('en-US', { 
+   hour: '2-digit', 
+   minute: '2-digit',
+   hour12: true 
+ });
 
-  messageCard.appendChild(msgSender);
-  messageCard.appendChild(messageTime);
-  messageCard.appendChild(messageContent);
+ const messageWrapper = document.createElement("div");
+ messageWrapper.className = "message-wrapper";
+ messageWrapper.appendChild(messageContent);
+ messageWrapper.appendChild(messageTime);
 
+ messageCard.appendChild(msgSender);
+ messageCard.appendChild(messageWrapper);
   return messageCard;
 }

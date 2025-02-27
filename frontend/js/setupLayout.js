@@ -7,12 +7,14 @@ export async function setuplayout() {
     header.id = "button-group";
     header.className = "button-group";
     header.innerHTML = /*html*/`
+        <div class="profile-wrapper">
           <div class="profilePic" id=${Profile.Id}> 
-              ${Profile.FirstName[0]}${Profile.LastName[0]}
+            ${Profile.FirstName[0]}${Profile.LastName[0]}
             <div class="profileNicknime">
               ${Profile.Nickname}
             </div>
           </div>
+        </div>
         <button id="logout"  class="logedout" href="/logout" data-link>
           <img class="logedout" src="/frontend/img/logout.png" alt=""> logout
         </button>

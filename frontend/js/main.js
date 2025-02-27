@@ -23,6 +23,7 @@ export async function handleRoute() {
     if (router[currentPath]) {
       await router[currentPath].call();
     } else{
+      history.pushState(null, null, "/");
       await router["/"].call();
       return;
     }
