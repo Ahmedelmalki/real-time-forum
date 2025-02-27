@@ -76,7 +76,7 @@ export function displaySentMessage(message, currentUserId) {
   });
 }
 
-export function createChat() {
+export function createChat() { // make this element unscrollable AAAAAAAAAAAAAAAAAAAAAAA
   const app = document.querySelector("#app");
   if (!document.querySelector("#chat")) {
     const chat = document.createElement("div");
