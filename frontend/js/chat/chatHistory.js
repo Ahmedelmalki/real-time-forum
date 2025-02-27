@@ -54,41 +54,121 @@ function displayHistory(dms, id) {
   }
 }
 
-function createMessageCard(dm, id) { // 1  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  const messageCard = document.createElement("div");
-  messageCard.className = "message";
-  messageCard.dataset.messageId = dm.ID;
+// function createMessageCard(dm, id) { // 1  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+//   const messageCard = document.createElement("div");
+//   messageCard.className = "message";
+//   messageCard.dataset.messageId = dm.ID;
 
-  if (id === dm.Sender_id) {
-    messageCard.id = "msg-sent";
-  } else {
-    messageCard.id = "msg-received";
+//   if (id === dm.Sender_id) {
+//     messageCard.id = "msg-sent";
+//   } else {
+//     messageCard.id = "msg-received";
+//   }
+
+//   const msgSender = document.createElement("div");
+//   msgSender.className = "message-senedr";
+//   msgSender.textContent = dm.Sender_name;
+
+//   const messageContent = document.createElement("div");
+//   messageContent.className = "message-content";
+//   messageContent.textContent = escapeHTML(dm.Content);
+
+//   const messageTime = document.createElement("div");
+//   messageTime.className = "message-time";
+//  // Format time to only show hours and minutes
+//  const date = new Date(dm.Timestamp);
+//  messageTime.textContent = date.toLocaleTimeString('en-US', { 
+//    hour: '2-digit', 
+//    minute: '2-digit',
+//    hour12: true 
+//  });
+
+//  const messageWrapper = document.createElement("div");
+//  messageWrapper.className = "message-wrapper";
+//  messageWrapper.appendChild(messageContent);
+//  messageWrapper.appendChild(messageTime);
+
+//  messageCard.appendChild(msgSender);
+//  messageCard.appendChild(messageWrapper);
+//   return messageCard;
+// }
+function createMessageCard(dm, currentUserId) {
+  return createMessage(dm, {
+    currentUserId: currentUserId,
+    includeSender: true,
+    timeFormat: 'full', // Show full date
+    useWrapper: false   // No content wrapper
+  });
+}
+
+export function createMessage(messageData, options) {
+  const {
+    currentUserId,
+    includeSender = false,
+    timeFormat = 'full',
+    useWrapper = false,
+    appendTo = null,
+  } = options;
+
+  const isSent = currentUserId === messageData.Sender_id;
+
+  // Create main message container
+  const messageCard = document.createElement('div');
+  messageCard.className = 'message';
+  messageCard.id = isSent ? 'msg-sent' : 'msg-received';
+
+  // Set dataset if message ID exists
+  if (messageData.ID) {
+    messageCard.dataset.messageId = messageData.ID;
   }
 
-  const msgSender = document.createElement("div");
-  msgSender.className = "message-senedr";
-  msgSender.textContent = dm.Sender_name;
+  // Add sender element if needed
+  if (includeSender) {
+    const msgSender = document.createElement('div');
+    msgSender.className = 'message-sender';
+    msgSender.textContent = messageData.Sender_name;
+    messageCard.appendChild(msgSender);
+  }
 
-  const messageContent = document.createElement("div");
-  messageContent.className = "message-content";
-  messageContent.textContent = escapeHTML(dm.Content);
+  // Create message content
+  const messageContent = document.createElement('div');
+  messageContent.className = 'message-content';
+  messageContent.textContent = escapeHTML(messageData.Content);
 
-  const messageTime = document.createElement("div");
-  messageTime.className = "message-time";
- // Format time to only show hours and minutes
- const date = new Date(dm.Timestamp);
- messageTime.textContent = date.toLocaleTimeString('en-US', { 
-   hour: '2-digit', 
-   minute: '2-digit',
-   hour12: true 
- });
+  // Create and format time element
+  const messageTime = document.createElement('div');
+  messageTime.className = 'message-time';
+  const date = new Date(messageData.Timestamp);
 
- const messageWrapper = document.createElement("div");
- messageWrapper.className = "message-wrapper";
- messageWrapper.appendChild(messageContent);
- messageWrapper.appendChild(messageTime);
+  if (timeFormat === 'time') {
+    messageTime.textContent = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    if (useWrapper) {
+      messageTime.classList.add(isSent ? 'time-sent' : 'time-received');
+    }
+  } else {
+    messageTime.textContent = date;
+  }
 
- messageCard.appendChild(msgSender);
- messageCard.appendChild(messageWrapper);
+  // Handle wrapper element
+  if (useWrapper) {
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = 'message-wrapper';
+    messageWrapper.appendChild(messageContent);
+    messageWrapper.appendChild(messageTime);
+    messageCard.appendChild(messageWrapper);
+  } else {
+    messageCard.appendChild(messageContent);
+    messageCard.appendChild(messageTime);
+  }
+
+  // Append to container if specified
+  if (appendTo) {
+    appendTo.appendChild(messageCard);
+  }
+
   return messageCard;
 }
