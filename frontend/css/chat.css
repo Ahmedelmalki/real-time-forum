@@ -183,36 +183,7 @@
     font-size: larger;
 }
 
-/* messages */
-/* .message {
-    margin-bottom: 12px;         
-    max-width: 65%;              
-    display: block;              
-    clear: both;                 
-}   
 
-.message-content {
-padding: 8px 12px;         
-border-radius: 8px;          
-word-wrap: break-word;       
-display: inline-block;     
-border: 1px solid ;
-}
-
-#msg-sent {
-    float: right; 
-    background-color: rgb(180, 179, 179);
-    color: black;
-    border-radius: 10px;               
-}
-
-
-#msg-received {
-    float: left;       
-    background-color: black;   
-    border-radius: 10px;
-    color: #e0e0e0;      
-} */
 
 /* Message container styling */
 .message {
@@ -278,10 +249,10 @@ border: 1px solid ;
 .message-time {
     font-size: 0.7rem;
     color: #666;
-    position: absolute;
     bottom: -15px;
     right: 0;
     padding: 2px;
+    text-align: right;
 }
 
 .message-content {

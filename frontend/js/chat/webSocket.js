@@ -25,7 +25,6 @@ export const socket = {
         onlineUsersIds = newdata.users;
         updateUserStatus(newdata.users);
       } else if (msgContainer) {
-        console.log('newdata.type',newdata.type);
         
         displayMessage(newdata);
       } else {
