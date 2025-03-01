@@ -8,6 +8,7 @@ import (
 	websoc "real-time-forum/backend/WebSocket"
 	"real-time-forum/backend/authentication"
 	forum "real-time-forum/backend/handlers"
+	"real-time-forum/backend/middleware"
 	"real-time-forum/database"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -21,10 +22,14 @@ func main() {
 	hub := websoc.NewHub()
 	go hub.Run()
 	mux.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("./frontend"))))
-	
-	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+
+	// mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	// 	websoc.HandleConnections(hub, db)(w, r)
+	// })
+
+	mux.Handle("/ws", middleware.AuthMiddleware(db, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		websoc.HandleConnections(hub, db)(w, r)
-	})
+	})))
 
 	mux.HandleFunc("/dm", func(w http.ResponseWriter, r *http.Request) {
 		websoc.ChatAPIHandler(db)(w, r)
@@ -34,26 +39,29 @@ func main() {
 		http.ServeFile(w, r, "./frontend/index.html")
 	})
 
-
 	mux.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
 		forum.APIHandler(db)(w, r)
 	})
 
 	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			forum.RegisterHandler(db, w, r)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
+		forum.RegisterHandler(db, w, r)
 	})
 
-	mux.HandleFunc("/newPost", func(w http.ResponseWriter, r *http.Request) {
+	// mux.HandleFunc("/newPost", func(w http.ResponseWriter, r *http.Request) {
+	// 	if r.Method == http.MethodPost {
+	// 		forum.NewPostHandler(db)(w, r)
+	// 	} else {
+	// 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	// 	}
+	// })
+
+	mux.Handle("/newPost", middleware.AuthMiddleware(db, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			forum.NewPostHandler(db)(w, r)
 		} else {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		}
-	})
+	})))
 
 	mux.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		forum.LogOutHandler(db)(w, r)
@@ -94,6 +102,7 @@ func main() {
 		forum.ProfileApi(db)(w, r)
 	})
 
+	handler := middleware.RateLimit(mux)
 	fmt.Println("Server is running on http://localhost:3000")
-	log.Fatal(http.ListenAndServe(":3000", mux))
+	log.Fatal(http.ListenAndServe(":3000", handler))
 }

@@ -1,4 +1,5 @@
 import { escapeHTML } from "../app/helpers.js";
+import { renderLoginForm } from "../app/login.js";
 // import { isAuthenticated } from "../authentication/isAuth.js";
 import { fetchHistory, Msgs, resetChatHistory } from "./chatHistory.js";
 import { displaySentMessage } from "./chatHelpers.js";
@@ -103,6 +104,10 @@ export async function fetchUsers() {
   try {
     const res = await fetch("/users");
     if (!res.ok) {
+      if (res.status === 401) {
+        renderLoginForm();
+        return;
+      }
       throw new Error("Failed to fetch users");
     }
     const users = await res.json();
@@ -160,6 +165,7 @@ function createUsresContainer() {
     const app = document.querySelector("#app");
     const usersContainer = document.createElement("div");
     usersContainer.id = "usres-container";
+    usersContainer.className = 'notloged';
     app.appendChild(usersContainer);
   }
 }

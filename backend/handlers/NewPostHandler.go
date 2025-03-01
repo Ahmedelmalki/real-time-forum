@@ -13,11 +13,21 @@ import (
 
 func NewPostHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+            return
+        }
+
 		var Post modles.NewPost
-		json.NewDecoder(r.Body).Decode(&Post)
+		if err := json.NewDecoder(r.Body).Decode(&Post); err != nil {
+			fmt.Println("error decoding json", err)
+            http.Error(w, "Invalid request format", http.StatusBadRequest)
+            return
+        }
 
 		cookie, err := r.Cookie("forum_session")
 		if err != nil {
+			log.Println("No session cookie found")
 			http.Error(w, "Unauthorized to create a post", http.StatusUnauthorized)
 			return
 		}
@@ -75,6 +85,9 @@ func NewPostHandler(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Error committing transaction", http.StatusInternalServerError)
 			return
 		}
+		fmt.Println(`
+		oh no
+		`)
 		w.WriteHeader(http.StatusCreated)
 	}
 }

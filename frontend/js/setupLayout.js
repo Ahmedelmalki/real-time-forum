@@ -4,6 +4,7 @@ export async function setuplayout() {
     const header = document.createElement("header");
     header.id = "button-group";
     header.className = "button-group";
+    header.classList.add('notloged')
     header.innerHTML = /*html*/`
         <div class="profile-wrapper">
           <div class="profilePic" id=${Profile.Id}> 
@@ -23,6 +24,7 @@ export async function setuplayout() {
 
     const h = document.createElement("h1");
     h.id = "forum";
+    h.className = "notloged";
     h.innerHTML = /*html*/`
         <img src="/frontend/img/home.png"  class="home-icon">  forum
         `;

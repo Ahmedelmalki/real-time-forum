@@ -13,7 +13,6 @@ func getProfile(db *sql.DB, r *http.Request) (modles.User, error) {
 	var user modles.User
 	userId := authentication.IsLoged(db, r)
 	user.ID = userId
-	fmt.Println("user id :", user.ID)
 	query := `
 		SELECT
 			u.nickname,

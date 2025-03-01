@@ -93,13 +93,11 @@ func HandleConnections(hub *ConnectionManager, db *sql.DB) http.HandlerFunc {
 			}
 			fmt.Println("message",)
 			err = db.QueryRow(`SELECT id FROM users WHERE nickname = ? `, msg.ReceiverName).Scan(&msg.ReceiverID)
-			fmt.Println("rrrrrrrrrrr",msg.ReceiverID)
 			if err != nil {
 				fmt.Println("Error", err)
 			}
 
 			msg.SenderID = authentication.IsLoged(db, r)
-			fmt.Println("iiiiiiiiiiiiiii", msg.SenderID)
 
 			_, err = db.Exec(`
 					INSERT INTO chat (content, sender_id, receiver_id)

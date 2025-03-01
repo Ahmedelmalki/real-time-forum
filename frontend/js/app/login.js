@@ -2,7 +2,13 @@ import { handleRoute } from "../main.js";
 import { socket } from "../chat/webSocket.js";
 
 export function renderLoginForm() {
+  const nl = document.querySelectorAll('.notloged')
+  nl.forEach(e => {
+    e.remove();
+  })
+
   const container = document.getElementById("container");
+  container.style.display = "block";
   const chat = document.querySelector("#chat");
   if (chat) chat.remove();
 

@@ -1,9 +1,8 @@
-import { handleRoute } from '../main.js'
-
-const container = document.getElementById('container');
-
+import { handleApiError } from '../errorPage.js';
+import { handleRoute } from '../main.js';
 
 export function renderNewPost() {
+  const container = document.getElementById('container');
   container.innerHTML =/*html*/ `
   <form id="newPostForm" >
       <label for="title">Title:</label>
@@ -46,19 +45,20 @@ async function createNewPost(event) {
     categories: selectedCategories
   };
 
-
-  let res = await fetch("/newPost", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(postData)
-  });
-
-  if (res.ok) {
+  try {
+    const res = await fetch("/newPost", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData)
+    });
+  
+    if (!res.ok) {
+      await handleApiError(res);
+      return
+    }
     history.pushState(null, null, '/');
-    await handleRoute()
-    return
+    await handleRoute();
+  } catch (error) {
+    console.error(error);
   }
-
-  let data = await res.text();
-  alert(data);
 }

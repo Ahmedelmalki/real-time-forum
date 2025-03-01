@@ -1,3 +1,4 @@
+import { showErrorPage } from '../errorPage.js';
 import { debounce, escapeHTML, toggleComments, timeAgo } from './helpers.js';
 
 const container = document.getElementById('container')
@@ -5,6 +6,10 @@ export async function fetchPost() {
     try {
         const res = await fetch('/posts');
         if (!res.ok) {
+            if (res.status === 429){
+                showErrorPage(429, "Too many requests. Please try again later.")
+                return;
+            }
             throw new error
         }
         const posts = await res.json();

@@ -2,6 +2,7 @@
 
 import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
+import { handleRoute } from "../main.js";
 
 // Update Msgs object to track pagination properly
 export var Msgs = {
@@ -26,6 +27,11 @@ export async function fetchHistory(receiverNickname) {
   }
   
   const id = await isAuthenticated(); 
+  if (!id) {
+    history.pushState(null, null, "/login"); // testing
+    await handleRoute();
+    return;
+  }
   try {
     const res = await fetch(
       `/dm?receiver=${encodeURIComponent(receiverNickname)}&offset=${Msgs.offset}&limit=10`
