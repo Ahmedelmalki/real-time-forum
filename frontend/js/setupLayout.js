@@ -1,8 +1,6 @@
 export async function setuplayout() {
   if (!document.querySelector("#button-group")) {
-    Profile = await getProfile();
-    console.log('profile :', Profile);
-    
+    Profile = await getProfile();    
     const header = document.createElement("header");
     header.id = "button-group";
     header.className = "button-group";

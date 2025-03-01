@@ -1,97 +1,100 @@
+// chatHistory.js - Complete Version
+
 import { escapeHTML } from "../app/helpers.js";
 import { isAuthenticated } from "../authentication/isAuth.js";
 
-export var Msgs = {lastid : 0}
+// Update Msgs object to track pagination properly
+export var Msgs = {
+  lastid: 0,
+  offset: 0,
+  noMoreMessages: false
+};
+
+// Add reset function to clear history state
+export function resetChatHistory() {
+  Msgs.lastid = 0;
+  Msgs.offset = 0;
+  Msgs.noMoreMessages = false;
+}
+
+// Updated fetchHistory function with proper pagination
 export async function fetchHistory(receiverNickname) {
-  
   const messages = document.querySelector("#messages");
   if (!messages) {
     console.error("Messages container not found");
     return;
   }
-  const id = await isAuthenticated(); // why 
+  
+  const id = await isAuthenticated(); 
   try {
     const res = await fetch(
-      `/dm?receiver=${encodeURIComponent(receiverNickname)}&lastid=${Msgs.lastid}`
+      `/dm?receiver=${encodeURIComponent(receiverNickname)}&offset=${Msgs.offset}&limit=10`
     );
-     console.log('res :',res);
+    
     if (!res.ok) {
       throw new Error("error fetching dm history");
     }
-    const dms = await res.json()
+    const dms = await res.json();
 
     if (dms && dms.length) {
+      // Mark as no more messages if we got fewer than requested
+      if (dms.length < 10) {
+        Msgs.noMoreMessages = true;
+      }
+      
+      // Increment offset for next pagination
+      Msgs.offset += dms.length;
+      
+      // Display the messages
       displayHistory(dms, id);
-    } 
+    } else {
+      // No messages returned means we've reached the end
+      Msgs.noMoreMessages = true;
+    }
   } catch (error) {
     console.error(error);
   }
 }
 
+// Fixed displayHistory function that doesn't reverse messages
 function displayHistory(dms, id) {
   const messages = document.getElementById("messages");
   if (!messages) {
     console.log("error in messages");
     return;
   }
-  dms.reverse().forEach(dm => {
-    console.log('dm :', dm);
-    
-    console.log( ' Msgs.lastid',Msgs.lastid);
-    
+  
+  // Create a document fragment to batch DOM operations
+  const fragment = document.createDocumentFragment();
+  
+  // Don't reverse the messages - they're already in DESC order from the server
+  dms.forEach(dm => {
     if (dm) {
       const messageCard = createMessageCard(dm, id);
-      messages.appendChild(messageCard);
+      // Add new messages at the top
+      fragment.prepend(messageCard);
     }
   });
+  
+  // Insert all messages at once at the beginning of the messages container
+  if (messages.firstChild) {
+    messages.insertBefore(fragment, messages.firstChild);
+  } else {
+    messages.appendChild(fragment);
+  }
 
-  messages.scrollTo({
-    top: messages.scrollHeight - 50,
-    behavior: 'auto'
-  })
+  // Only scroll to bottom on initial load (when offset was 0 before this fetch)
+  if (Msgs.offset === dms.length) {
+    messages.scrollTop = messages.scrollHeight;
+  }
+  
+  // Update lastid if needed for tracking
   if (dms.length > 0) {
     Msgs.lastid = dms[0].ID;
   }
 }
 
-// function createMessageCard(dm, id) { // 1  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-//   const messageCard = document.createElement("div");
-//   messageCard.className = "message";
-//   messageCard.dataset.messageId = dm.ID;
-
-//   if (id === dm.Sender_id) {
-//     messageCard.id = "msg-sent";
-//   } else {
-//     messageCard.id = "msg-received";
-//   }
-
-//   const msgSender = document.createElement("div");
-//   msgSender.className = "message-senedr";
-//   msgSender.textContent = dm.Sender_name;
-
-//   const messageContent = document.createElement("div");
-//   messageContent.className = "message-content";
-//   messageContent.textContent = escapeHTML(dm.Content);
-
-//   const messageTime = document.createElement("div");
-//   messageTime.className = "message-time";
-//  // Format time to only show hours and minutes
-//  const date = new Date(dm.Timestamp);
-//  messageTime.textContent = date.toLocaleTimeString('en-US', { 
-//    hour: '2-digit', 
-//    minute: '2-digit',
-//    hour12: true 
-//  });
-
-//  const messageWrapper = document.createElement("div");
-//  messageWrapper.className = "message-wrapper";
-//  messageWrapper.appendChild(messageContent);
-//  messageWrapper.appendChild(messageTime);
-
-//  messageCard.appendChild(msgSender);
-//  messageCard.appendChild(messageWrapper);
-//   return messageCard;
-// }
+// Existing createMessageCard function
 function createMessageCard(dm, currentUserId) {
   return createMessage(dm, {
     currentUserId: currentUserId,
@@ -101,6 +104,7 @@ function createMessageCard(dm, currentUserId) {
   });
 }
 
+// Existing createMessage function
 export function createMessage(messageData, options) {
   const {
     currentUserId,

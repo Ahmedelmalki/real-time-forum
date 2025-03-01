@@ -94,6 +94,6 @@ func main() {
 		forum.ProfileApi(db)(w, r)
 	})
 
-	fmt.Println("Server is running on http://localhost:4011")
-	log.Fatal(http.ListenAndServe(":4011", mux))
+	fmt.Println("Server is running on http://localhost:3000")
+	log.Fatal(http.ListenAndServe(":3000", mux))
 }

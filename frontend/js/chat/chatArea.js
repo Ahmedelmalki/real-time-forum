@@ -1,6 +1,6 @@
 import { escapeHTML } from "../app/helpers.js";
 // import { isAuthenticated } from "../authentication/isAuth.js";
-import { fetchHistory, Msgs } from "./chatHistory.js";
+import { fetchHistory, Msgs, resetChatHistory } from "./chatHistory.js";
 import { displaySentMessage } from "./chatHelpers.js";
 import { socket } from "./webSocket.js";
 import { createChat } from "./chatHelpers.js";
@@ -33,9 +33,10 @@ export function chatArea(nickname) {
 function setupeventlisteners(nickname) {
   let msgctr = document.querySelector(".messages-container");
   msgctr.addEventListener("scroll", () => {
+    // Only fetch more if we're near the top and there are more messages
     if (msgctr.scrollTop < 50 && !Msgs.noMoreMessages) {
       fetchHistory(nickname);
-      console.log("msg.lastid:", Msgs.lastid);
+      console.log("msg.lastid:", Msgs.lastid, "offset:", Msgs.offset);
     }
   });
 
@@ -119,7 +120,7 @@ function displayUsers(users) {
   users.forEach((user) => {
     const userCard = createUserCard(user);
     userCard.addEventListener("click", () => {
-      Msgs.lastid = 0;
+      resetChatHistory();
       chatArea(user.Nickname);      
       fetchHistory(user.Nickname);
     });

@@ -21,7 +21,6 @@ export const socket = {
     try {
       const msgContainer = document.querySelector(".messages-container");
       const newdata = JSON.parse(event.data);
-      console.log('newdata :', newdata);
       if (newdata.type === "users-status") {
         onlineUsersIds = newdata.users;
         updateUserStatus(newdata.users);
