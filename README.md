@@ -40,62 +40,20 @@ A real-time web forum application with private messaging capabilities built usin
 ```
 .
 ├── backend
-│   ├── authentication
-│   │   ├── authenticationHandler.go
-│   │   └── auth.go
+│   ├── authentication   
 │   ├── handlers
-│   │   ├── commentsHandler.go
-│   │   ├── displayUsersHandler.go
-│   │   ├── loginHandler.go
-│   │   ├── logoutHandler.go
-│   │   ├── NewPostHandler.go
-│   │   ├── postsHandler.go
-│   │   ├── profileHandler.go
-│   │   └── registerHandler.go
 │   ├── middleware
-│   │   ├── rateLimit.go
-│   │   └── routeProtection.go
 │   ├── mods
-│   │   └── modles.go
 │   └── WebSocket
-│       ├── chatHandler.go
-│       ├── historyHandler.go
-│       └── modes.go
 ├── database
-│   ├── dummyData.go
-│   ├── initDB.go
-│   ├── schema.sql
-│   └── Test51.db
 ├── frontend
 │   ├── css
-│   │   ├── chat.css
-│   │   ├── login.css
-│   │   ├── singup.css
-│   │   └── style.css
 │   ├── img
-│   │   ├── dmBackground.jpeg
-│   │   ├── forum.png
-│   │   ├── home.png
-│   │   ├── logout.png
-│   │   ├── logout.svg
-│   │   └── send.png
 │   ├── index.html
 │   └── js
 │       ├── app
-│       │   ├── comments.js
-│       │   ├── helpers.js
-│       │   ├── logedout.js
-│       │   ├── login.js
-│       │   ├── newPost.js
-│       │   ├── posts.js
-│       │   └── register.js
 │       ├── authentication
-│       │   └── isAuth.js
 │       ├── chat
-│       │   ├── chatArea.js
-│       │   ├── chatHelpers.js
-│       │   ├── chatHistory.js
-│       │   └── webSocket.js
 │       ├── main.js
 │       ├── routes.js
 │       └── setupLayout.js
